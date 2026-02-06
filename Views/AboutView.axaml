@@ -1,0 +1,15 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="cross.AboutView">
+      <Grid Background="#F3F4F6" >
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="15">
+            <TextBlock Text="关于我们" FontSize="28" Foreground="#1F2937"/>
+            <TextBlock Text="版本：v1.0.0" FontSize="18"/>
+            <TextBlock Text="基于Avalonia 11开发" FontSize="18"/>
+            <TextBlock Text="© 2026 Avalonia学习示例" FontSize="18"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,89 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:cross.ViewModels"
+        x:Class="cross.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="Avalonia汉堡菜单"
+        Width="1200" Height="800">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <DockPanel>
+        <!-- 顶部导航栏 -->
+        <Grid DockPanel.Dock="Top" Background="#1F2937">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 汉堡按钮：命令绑定 -->
+            <Button Content="☰" 
+                    FontSize="20" 
+                    Foreground="White"
+                    Background="Transparent"
+                    Click="HamburgerButton_Click"
+                    Width="40" Height="40" 
+                    Cursor="Hand"
+                    Margin="8"/>
+
+            <TextBlock Grid.Column="1" 
+                       Text="Avalonia原生汉堡菜单"
+                       Foreground="White" 
+                       FontSize="18" 
+                       VerticalAlignment="Center"
+                       Margin="0 0 16 0"/>
+        </Grid>
+
+        <!-- 主体布局：双列布局，无动画定义 -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 侧边栏容器：使用Border宽度动画，修复所有语法错误 -->
+            <Border 
+                    x:Name="SidebarBorder"
+                    Grid.Column="0" 
+                    Background="#374151"
+                    CornerRadius="0 8 8 0" 
+                    Padding="8"
+                    Width="{Binding SidebarWidth}"
+                    HorizontalAlignment="Left">
+                <!-- 宽度过渡动画：Avalonia 11 标准语法 -->
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Width" Duration="0:0:0.3"/>
+                    </Transitions>
+                </Border.Transitions>
+                
+                <StackPanel Spacing="16" Margin="8 16 8 8" Width="224">
+                    <!-- 侧边栏按钮：添加Click事件 -->
+                    <Button Content="首页" Foreground="White" Background="#4B5563"
+                            Padding="16" HorizontalAlignment="Stretch"
+                            Click="HomeButton_Click"/>
+                    <Button Content="数据管理" Foreground="White" Background="#4B5563"
+                            Padding="16" HorizontalAlignment="Stretch"
+                            Click="DataManageButton_Click"/>
+                    <Button Content="设置" Foreground="White" Background="#4B5563"
+                            Padding="16" HorizontalAlignment="Stretch"
+                            Click="SettingsButton_Click"/>
+                    <Button Content="关于" Foreground="White" Background="#4B5563"
+                            Padding="16" HorizontalAlignment="Stretch"
+                            Click="AboutButton_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 主内容区 -->
+            <Border Grid.Column="1" 
+                    Background="#F3F4F6" 
+                    Padding="16">
+            <!-- 右侧主内容区：用ContentControl承载子页面 -->
+            <ContentControl x:Name="MainContentControl"
+                            Grid.Column="1" 
+                            Background="#F3F4F6"/>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>
