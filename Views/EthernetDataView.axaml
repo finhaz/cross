@@ -3,16 +3,117 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="cross.EthernetDataView">
+             x:Class="cross.EthernetDataView"
+             xmlns:viewmodels="clr-namespace:cross.ViewModels"
+             xmlns:converters="clr-namespace:cross.Converters"
+             x:DataType="viewmodels:EthernetConfigViewModel">
+
+        <!-- 绑定ViewModel -->
+        <UserControl.DataContext>
+            <viewmodels:EthernetConfigViewModel/>
+        </UserControl.DataContext>
+
+        <!-- 简单转换器 -->
+        <UserControl.Resources>
+            <converters:StringEqualsConverter x:Key="StringEqualsConverter"/>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </UserControl.Resources>
+
+
       <Border Background="#F3F4F6" Padding="20">
         <Grid>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
-                <TextBlock Text="以太网数据管理页面" FontSize="28" Foreground="#1F2937"/>
-                <TextBlock Text="• IP地址：192.168.1.100" FontSize="18"/>
-                <TextBlock Text="• 端口号：8080" FontSize="18"/>
-                <TextBlock Text="• 协议：TCP" FontSize="18"/>
-                <Button Content="连接服务器" Width="120" Margin="0 20 0 0"/>
-            </StackPanel>
+
+         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 1. 协议选择 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5">
+            <Label Content="协议：" Width="60"/>
+            <RadioButton Content="TCP" IsChecked="{Binding SelectedProtocol, Converter={StaticResource StringEqualsConverter}, ConverterParameter=TCP}" Margin="0,0,20,0"/>
+            <RadioButton Content="UDP" IsChecked="{Binding SelectedProtocol, Converter={StaticResource StringEqualsConverter}, ConverterParameter=UDP}"/>
+        </StackPanel>
+
+        <!-- 2. TCP模式选择（仅TCP时显示） -->
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5"
+                    IsVisible ="{Binding IsTcpSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Label Content="TCP模式：" Width="60"/>
+            <RadioButton Content="服务器" IsChecked="{Binding TcpMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Server}" Margin="0,0,20,0"/>
+            <RadioButton Content="客户端" IsChecked="{Binding TcpMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Client}"/>
+        </StackPanel>
+
+        <!-- 3. 本地IP和端口 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5">
+            <Label Content="本地IP：" Width="60"/>
+            <TextBox Text="{Binding LocalIp}" Width="150"/>
+            <Label Content="端口：" Width="40" Margin="10,0"/>
+            <TextBox Text="{Binding LocalPort}" Width="80" IsEnabled="{Binding IsLocalPortEnabled}"/>
+        </StackPanel>
+
+        <!-- 4. 远程IP和端口（TCP客户端/UDP显示） -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,5"
+                    IsVisible ="{Binding IsRemoteConfigVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Label Content="远程IP：" Width="60"/>
+            <TextBox Text="{Binding RemoteIp}" Width="150"/>
+            <Label Content="端口：" Width="40" Margin="10,0"/>
+            <TextBox Text="{Binding RemotePort}" Width="80"/>
+        </StackPanel>
+
+        <!-- 分隔线 -->
+        <Separator Grid.Row="4" Margin="0,10"/>
+
+        <!-- 5. 数据收发显示区域 -->
+        <Grid Grid.Row="5" Margin="0,5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 收发数据显示文本框 -->
+            <Label Grid.Row="0" Content="数据收发日志："/>
+            <TextBox Grid.Row="1" 
+                     Text="{Binding DataLog, Mode=OneWay}" 
+                     IsReadOnly="True" 
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"/>
+
+            <!-- 发送数据输入框 -->
+            <TextBox Grid.Row="2" 
+                     Text="{Binding SendData}" 
+                     ToolTip.Tip="输入要发送的数据..."
+                     Margin="0,5,0,0"/>
+
+            <!-- 发送按钮 -->
+            <Button Grid.Row="3" 
+                    Content="发送数据" 
+                    Command="{Binding SendDataCommand}"
+                    Width="100"
+                    Margin="0,5,0,0"
+                    IsEnabled="{Binding IsConnected}"/>
+        </Grid>
+
+        <!-- 操作按钮 -->
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+            <Button Content="{Binding ConnectButtonText}" Command="{Binding ConnectCommand}" Width="80" Margin="0,0,10,0"/>
+            <Button Content="清空日志" Command="{Binding ClearLogCommand}" Width="80" Margin="0,0,10,0"/>
+            <Button Content="保存" Command="{Binding SaveCommand}" Width="80"/>
+        </StackPanel>
+
+
+
         </Grid>
     </Border>
 </UserControl>
