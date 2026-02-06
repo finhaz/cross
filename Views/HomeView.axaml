@@ -6,11 +6,37 @@
              x:Class="cross.HomeView">
     <Border Background="#F3F4F6" Padding="20">
         <Grid>
-            <TextBlock Text="主页" 
-                       FontSize="28" 
-                       Foreground="#1F2937"  
-                       HorizontalAlignment="Center" 
-                       VerticalAlignment="Center"/>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+                <!-- 原有标题 -->
+                <TextBlock Text="首页" 
+                           FontSize="32" 
+                           Foreground="#1F2937"
+                           FontFamily="{StaticResource EmbeddedYaHei}"/>
+                
+                <!-- 新增通讯方式选择框 -->
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="通讯方式：" 
+                               FontSize="20" 
+                               Foreground="#1F2937"
+                               FontFamily="{StaticResource EmbeddedYaHei}"
+                               VerticalAlignment="Center"/>
+                    <ComboBox x:Name="CommTypeComboBox"
+                              Width="200"
+                              FontSize="18"
+                              FontFamily="{StaticResource EmbeddedYaHei}"
+                              SelectionChanged="CommTypeComboBox_SelectionChanged">
+                        <!-- 三个通讯选项 -->
+                        <ComboBoxItem Content="串口"/>
+                        <ComboBoxItem Content="以太网"/>
+                        <ComboBoxItem Content="CAN"/>
+                    </ComboBox>
+                </StackPanel>
+                
+                <TextBlock Text="选择后点击「数据管理」查看对应页面" 
+                           FontSize="16" 
+                           Foreground="#6B7280"
+                           FontFamily="{StaticResource EmbeddedYaHei}"/>
+            </StackPanel>
         </Grid>
     </Border>
 </UserControl>

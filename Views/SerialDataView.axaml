@@ -1,0 +1,18 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="cross.SerialDataView">
+      <Border Background="#F3F4F6" Padding="20">
+        <Grid>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+                <TextBlock Text="串口数据管理页面" FontSize="28" Foreground="#1F2937"/>
+                <TextBlock Text="• 串口波特率：9600" FontSize="18"/>
+                <TextBlock Text="• 数据位：8位" FontSize="18"/>
+                <TextBlock Text="• 校验位：无" FontSize="18"/>
+                <Button Content="打开串口" Width="120" Margin="0 20 0 0"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,18 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="cross.CANDataView">
+      <Border Background="#F3F4F6" Padding="20">
+        <Grid>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+                <TextBlock Text="CAN数据管理页面" FontSize="28" Foreground="#1F2937"/>
+                <TextBlock Text="• 波特率：500Kbps" FontSize="18"/>
+                <TextBlock Text="• 通道：CAN1" FontSize="18"/>
+                <TextBlock Text="• 模式：正常模式" FontSize="18"/>
+                <Button Content="启动CAN总线" Width="120" Margin="0 20 0 0"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

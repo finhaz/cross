@@ -30,7 +30,22 @@ namespace cross.Views
         // 数据管理
         private void DataManageButton_Click(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = new DataManageView();
+            // 获取HomeView中选中的通讯类型
+            switch (HomeView.SelectedCommType)
+            {
+                case "串口":
+                    MainContentControl.Content = new SerialDataView();
+                    break;
+                case "以太网":
+                    MainContentControl.Content = new EthernetDataView();
+                    break;
+                case "CAN":
+                    MainContentControl.Content = new CANDataView();
+                    break;
+                default:
+                    MainContentControl.Content = new SerialDataView(); // 默认串口
+                    break;
+            }
         }
 
         // 设置
