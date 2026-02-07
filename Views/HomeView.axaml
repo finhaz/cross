@@ -7,13 +7,17 @@
              xmlns:viewmodels="clr-namespace:cross.ViewModels"
              x:DataType="viewmodels:MainPageViewModel"
              Loaded="UserControl_Loaded">
-    <UserControl.DataContext>
-        <viewmodels:MainPageViewModel/>
+    <UserControl.Resources>
+        <viewmodels:MainPageViewModel x:Key="MainPageVM"/>
         <!-- 手动创建ViewModel实例 -->
-    </UserControl.DataContext>
+    </UserControl.Resources>
+
     <Border Background="#F3F4F6" Padding="20">
         <Grid>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+            <StackPanel 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Spacing="20" >
                 <!-- 原有标题 -->
                 <TextBlock Text="首页" 
                            FontSize="32" 
@@ -21,7 +25,8 @@
                            FontFamily="{StaticResource EmbeddedYaHei}"/>
                 
                 <!-- 新增通讯方式选择框 -->
-                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center"
+                            DataContext="{Binding Source={StaticResource MainPageVM}}">
                     <TextBlock Text="通讯方式：" 
                                FontSize="20" 
                                Foreground="#1F2937"
