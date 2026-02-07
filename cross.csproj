@@ -29,5 +29,7 @@
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
     <PackageReference Include="ThingLing.Avalonia.Controls.MessageBox" Version="2.0.0" />
+    <PackageReference Include="Xaml.Behaviors.Avalonia" Version="11.3.9.4" />
+    <PackageReference Include="Xaml.Behaviors.Interactions" Version="11.3.9.4" />
   </ItemGroup>
 </Project>

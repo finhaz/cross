@@ -2,11 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="cross.HomeView"
              xmlns:viewmodels="clr-namespace:cross.ViewModels"
              x:DataType="viewmodels:MainPageViewModel"
-             Loaded="UserControl_Loaded">
+             xmlns:interactivity="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="clr-namespace:Avalonia.Xaml.Behaviors;assembly=Avalonia.Xaml.Behaviors">
     <UserControl.Resources>
         <viewmodels:MainPageViewModel x:Key="MainPageVM"/>
         <!-- 手动创建ViewModel实例 -->
@@ -38,11 +38,10 @@
                               FontFamily="{StaticResource EmbeddedYaHei}"
                               SelectionChanged="CommTypeComboBox_SelectionChanged"
                               ItemsSource="{Binding CommTypeOptions}"
+                              DisplayMemberBinding="{Binding Key}"
                               SelectedValueBinding="{Binding Value}"
-                              SelectedValue="{Binding SelectedCommType,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                             <ComboBox.DisplayMemberBinding>
-                                <Binding Path="Key" />
-                            </ComboBox.DisplayMemberBinding>
+                              SelectedValue="{Binding SelectedCommType,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              >
                     </ComboBox>
                 </StackPanel>
                 
