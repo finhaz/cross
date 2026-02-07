@@ -62,6 +62,17 @@ namespace cross.Views
             MainContentControl.Content = new SettingsView();
         }
 
+
+        private void DBCButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = new DbcView();
+        }
+
+        private void ProfButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = new AboutView();
+        }
+
         // 关于
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {

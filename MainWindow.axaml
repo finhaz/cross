@@ -63,12 +63,21 @@
                     <Button Content="首页" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
                             Click="HomeButton_Click"/>
-                    <Button Content="数据管理" Foreground="White" Background="#4B5563"
+                    <Button Content="通讯配置界面" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
                             Click="DataManageButton_Click"/>
-                    <Button Content="设置" Foreground="White" Background="#4B5563"
+                    <Button Content="通用调试界面" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
                             Click="SettingsButton_Click"/>
+                     <Button Content="设备控制界面" Foreground="White" Background="#4B5563"
+                            Padding="16" HorizontalAlignment="Stretch"
+                            Click="SettingsButton_Click"/>
+                    <Button Content="DBC界面" Foreground="White" Background="#4B5563"
+                            Padding="16" HorizontalAlignment="Stretch"
+                            Click="DBCButton_Click"/>
+                    <Button Content="通讯协议说明" Foreground="White" Background="#4B5563"
+                            Padding="16" HorizontalAlignment="Stretch"
+                            Click="ProfButton_Click"/>
                     <Button Content="关于" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
                             Click="AboutButton_Click"/>
