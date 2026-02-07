@@ -3,7 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="cross.HomeView">
+             x:Class="cross.HomeView"
+             xmlns:viewmodels="clr-namespace:cross.ViewModels"
+             x:DataType="viewmodels:MainPageViewModel">
+    <UserControl.Resources>
+        <viewmodels:MainPageViewModel x:Key="MainPageVM" />
+        <!-- 手动创建ViewModel实例 -->
+    </UserControl.Resources>
     <Border Background="#F3F4F6" Padding="20">
         <Grid>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
@@ -24,11 +30,13 @@
                               Width="200"
                               FontSize="18"
                               FontFamily="{StaticResource EmbeddedYaHei}"
-                              SelectionChanged="CommTypeComboBox_SelectionChanged">
-                        <!-- 三个通讯选项 -->
-                        <ComboBoxItem Content="串口"/>
-                        <ComboBoxItem Content="以太网"/>
-                        <ComboBoxItem Content="CAN"/>
+                              SelectionChanged="CommTypeComboBox_SelectionChanged"
+                              ItemsSource="{Binding CommTypeOptions}"
+                              SelectedValueBinding="{Binding Value}"
+                              SelectedValue="{Binding SelectedCommType,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                             <ComboBox.DisplayMemberBinding>
+                                <Binding Path="Key" />
+                            </ComboBox.DisplayMemberBinding>
                     </ComboBox>
                 </StackPanel>
                 
