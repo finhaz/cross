@@ -5,11 +5,12 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="cross.HomeView"
              xmlns:viewmodels="clr-namespace:cross.ViewModels"
-             x:DataType="viewmodels:MainPageViewModel">
-    <UserControl.Resources>
-        <viewmodels:MainPageViewModel x:Key="MainPageVM" />
+             x:DataType="viewmodels:MainPageViewModel"
+             Loaded="UserControl_Loaded">
+    <UserControl.DataContext>
+        <viewmodels:MainPageViewModel/>
         <!-- 手动创建ViewModel实例 -->
-    </UserControl.Resources>
+    </UserControl.DataContext>
     <Border Background="#F3F4F6" Padding="20">
         <Grid>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
