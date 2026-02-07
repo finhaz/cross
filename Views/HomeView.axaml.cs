@@ -12,8 +12,6 @@ namespace cross;
 
 public partial class HomeView : UserControl
 {
-    // 静态全局变量：存储当前选中的通讯类型（默认串口）
-    public static string SelectedCommType = "串口";
     public HomeView()
     {
         InitializeComponent();
@@ -24,11 +22,27 @@ public partial class HomeView : UserControl
     // 选择框切换事件：更新全局变量
     private void CommTypeComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        //if (CommTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
-        //{
-            // 更新全局通讯类型
-        //    SelectedCommType = selectedItem.Content.ToString() ?? "串口";
-        //}
+        if (CommTypeComboBox != null)
+        {
+            switch (CommTypeComboBox.SelectedValue)
+            {
+                case CommunicationType.SerialPort:
+                    // 选择串口：创建串口实例（仅创建，不打开/不绑定事件）
+                    CommunicationManager.Instance.CreateSerialInstance();
+                    break;
+                case CommunicationType.CAN:
+                    // 针对TTL转CAN，创建串口实例（仅创建，不打开/不绑定事件）
+                    CommunicationManager.Instance.CreateSerialInstance();
+                    break;
+                case CommunicationType.Ethernet:
+                    // 仅创建网络通讯空实例，不指定TCP/UDP
+                    CommunicationManager.Instance.CreateEthernetInstance();
+                    break;
+                case CommunicationType.IIC:
+                    // 预留，暂不处理
+                    break;
+            }
+        }
     }
 
     // 在窗口加载后执行

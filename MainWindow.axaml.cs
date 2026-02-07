@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using cross.Communication;
+using cross.ViewModels;
 
 namespace cross.Views
 {
@@ -7,9 +9,13 @@ namespace cross.Views
     {
         // 侧边栏展开状态标记
         private bool _isSidebarOpen = true;
+        private AppViewModel _appViewModel;
         public MainWindow()
         {
             InitializeComponent();
+            // 获取全局AppViewModel
+            _appViewModel = AppViewModel.Instance;
+            DataContext = _appViewModel;
         }
 
         #region 汉堡按钮：折叠/展开侧边栏
@@ -30,16 +36,18 @@ namespace cross.Views
         // 数据管理
         private void DataManageButton_Click(object sender, RoutedEventArgs e)
         {
+
             // 获取HomeView中选中的通讯类型
-            switch (HomeView.SelectedCommType)
+            //switch (HomeView.SelectedCommType)
+            switch(_appViewModel.SelectedCommType)
             {
-                case "串口":
+                case CommunicationType.SerialPort:
                     MainContentControl.Content = new SerialDataView();
                     break;
-                case "以太网":
+                case CommunicationType.Ethernet:
                     MainContentControl.Content = new EthernetDataView();
                     break;
-                case "CAN":
+                case CommunicationType.CAN:
                     MainContentControl.Content = new CANDataView();
                     break;
                 default:
