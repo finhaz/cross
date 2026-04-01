@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 
-namespace ocean.Converters
+namespace cross.Converters
 {
     // 布尔值转按钮文字的转换器：true→隐藏高级列，false→显示高级列
     public class BoolToButtonTextConverter : IValueConverter

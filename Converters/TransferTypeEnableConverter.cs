@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 
-namespace ocean.Converters
+namespace cross.Converters
 {
     /// <summary>
     /// 基于NBit和SelectedOption控制传输类型下拉框选项是否启用的转换器

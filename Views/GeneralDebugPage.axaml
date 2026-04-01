@@ -10,7 +10,7 @@
     <Grid>
         <!-- 添加资源：布尔值转可见性的转换器 -->
         <Grid.Resources>
-            <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
             <local:BindingProxy x:Key="ModbusSetProxy" Data="{Binding ModbusSet}"/>
             <converters:BoolToButtonTextConverter x:Key="BoolToButtonTextConverter"/>
             <converters:ValueDisplayConverter x:Key="ValueDisplayConverter"/>
