@@ -1,0 +1,359 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:cross.ViewModels"
+             xmlns:converters="clr-namespace:cross.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="cross.GeneralDebugPage">
+
+    <Grid>
+        <!-- 添加资源：布尔值转可见性的转换器 -->
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+            <local:BindingProxy x:Key="ModbusSetProxy" Data="{Binding ModbusSet}"/>
+            <converters:BoolToButtonTextConverter x:Key="BoolToButtonTextConverter"/>
+            <converters:ValueDisplayConverter x:Key="ValueDisplayConverter"/>
+            <converters:TransferTypeEnableConverter x:Key="TransferTypeEnableConverter"/>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="26*"/>
+            <ColumnDefinition Width="100*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="122"  MinWidth="122" MaxWidth="200"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="90*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="26*"/>
+                <ColumnDefinition Width="40*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="100*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="20*"/>
+            </Grid.RowDefinitions>
+            <TextBox 
+                      HorizontalAlignment="Left" 
+                      Grid.Row="0"
+                      Text="协议类型"
+                      FontSize="10" 
+                      Grid.ColumnSpan="2"  
+                      TextAlignment="Center"
+                      VerticalAlignment="Center"/>
+            <ComboBox
+                Name="cPro" 
+                FontSize="10" 
+                Grid.Row="0" 
+                Margin="60,1,0,1" 
+                Grid.ColumnSpan="2"
+                ItemsSource="{Binding ModbusSet.ProtocolConfig.ProtocolTypeOptions}"
+                SelectedItem="{Binding ModbusSet.ProtocolConfig.SelectedProtocolType, Mode=TwoWay}" SelectionChanged="cPro_SelectionChanged"/>
+
+            <Button x:Name="ButtonAdd" Width="100" Height="38" Margin="0,0,10,0" 
+                Background="#E0F2F1" Foreground="#00796B" 
+                Grid.Row="1" Grid.ColumnSpan="2" Click="ButtonAdd_Click">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource AddGeometry}" Margin="0,0,5,0"/>
+                    <TextBlock Text="添加条目"/>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="ButtonDelete" Width="100" Height="38" Margin="0,0,10,0" 
+                Background="#E0F2F1" Foreground="#00796B" 
+                Grid.Row="2" Grid.ColumnSpan="2" Click="ButtonDelete_Click">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource DeleteGeometry}" Margin="0,0,5,0"/>
+                    <TextBlock Text="删除条目"/>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="ExportConfigBtn" Width="100" Height="38" Margin="0,0,10,0" 
+                Background="#E0F2F1" Foreground="#00796B" 
+                Grid.Row="3" Grid.ColumnSpan="2" Click="ExportConfig_Click">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource ExportGeometry}" Margin="0,0,5,0"/>
+                    <TextBlock Text="导出配置"/>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="ImportConfigBtn" Width="100" Height="38" Margin="0,0,10,0" 
+                Background="#E0F2F1" Foreground="#00796B" 
+                Grid.Row="4" Grid.ColumnSpan="2" Click="ImportConfig_Click">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource ImportGeometry}" Margin="0,0,5,0"/>
+                    <TextBlock Text="导入配置"/>
+                </StackPanel>
+            </Button>
+            
+            <Button 
+                Grid.Row="5" 
+                Grid.ColumnSpan="2"
+                Width="100" 
+                Height="38" 
+                Margin="0,0,10,0" 
+                Background="#E0F2F1" 
+                Foreground="#00796B"
+                Command="{Binding ModbusSet.ToggleAdvancedColumnsCommand}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource ToggleGeometry}" Margin="0,0,5,0"/>
+                    <!-- 绑定动态文本，替代原Content属性 -->
+                    <TextBlock Text="{Binding ModbusSet.IsAdvancedColumnsVisible, 
+                          Converter={StaticResource BoolToButtonTextConverter}}"/>
+                </StackPanel>
+            </Button>
+
+
+            <Grid Name="Setadd" Grid.Row="6" Grid.ColumnSpan="2" IsVisible="False" Cursor="">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="40*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="10*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 固定标签：参数名 -->
+                <TextBox Text="参数名" Grid.Row="0" IsReadOnly="True"/>
+                <!-- 绑定输入：参数名输入框 -->
+                <TextBox Grid.Row="0" Grid.Column="1" />
+
+                <!-- 固定标签：数值 -->
+                <TextBox Text="数值" Grid.Row="1" IsReadOnly="True"/>
+                <!-- 绑定输入：数据条数 -->
+                <TextBox Text="{Binding ModbusSet.Snum, Mode=TwoWay}" Grid.Row="1" Grid.Column="1"/>
+
+                <!-- 固定标签：类型 -->
+                <TextBox Text="类型" Grid.Row="2" IsReadOnly="True"/>
+                <!-- 下拉选择框：修复冗余Grid.ColumnSpan=2，适配统一样式 -->
+                <!-- 原位置替换为这段代码，仅外层包了Border，控件本体无任何修改 -->
+                <Border 
+                    Grid.Row="2" 
+                    Grid.Column="1" 
+                    CornerRadius="6" 
+                    Background="#E0F2F1"
+                    Margin="8"
+                    ClipToBounds="True">
+                        <ComboBox Name="cbProcho" 
+                            FontSize="10" 
+                            ItemsSource="{Binding ModbusSet.ProtocolConfig.DataTypeOptions}"
+                            SelectedItem="{Binding ModbusSet.ProtocolConfig.SelectedDataType, Mode=TwoWay}"
+                            Background="Transparent" 
+                            BorderThickness="0"
+                            VerticalContentAlignment="Center"
+                            Padding="6,0"/>
+                </Border>
+
+                <!-- 固定标签：起始地址 -->
+                <TextBox Text="起始地址" Grid.Row="3" IsReadOnly="True"/>
+                <!-- 绑定输入：起始地址 -->
+                <TextBox Text="{Binding ModbusSet.Sadd, Mode=TwoWay}" Grid.Row="3" Grid.Column="1"/>
+
+                <!-- 确定按钮：应用统一样式、尺寸、配色 -->
+                <Button Content="确定" Grid.Row="5" Grid.Column="0" 
+                    Width="80" Height="38"
+                    Background="#E0F2F1" Foreground="#00796B"
+                    Click="setsure_click" />
+
+                <!-- 取消按钮：应用统一样式、尺寸、配色 -->
+                <Button Content="取消" Grid.Row="5" Grid.Column="1" 
+                    Width="80" Height="38"
+                    Background="#E0F2F1" Foreground="#00796B"
+                    Click="setcancel_click" />
+            </Grid>
+
+
+
+        </Grid>
+
+        <Grid  Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="20*"/>
+            </Grid.RowDefinitions>
+            <TabControl>
+                <DataGrid x:Name="dataGrodx"
+                                ItemsSource="{Binding ModbusSet.ModbusDataList, Mode=TwoWay}"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False">
+                        <!-- 使用Interactivity行为绑定命令（替代传统事件） -->
+                    <interactivity:Interaction.Triggers>
+                        <interactivity:EventTrigger EventName="MouseDoubleClick">
+                            <interactivity:InvokeCommandAction 
+                            Command="{Binding ModbusSet.DataGridDoubleClickCommand}"
+                            CommandParameter="{Binding ElementName=dataGrodx}"/>
+                            <!-- 直接传DataGrid控件 -->
+                        </interactivity:EventTrigger>
+                    </interactivity:Interaction.Triggers>
+                    <DataGrid.Columns>
+                            <!-- 前四列：普通文本 -->
+                            <DataGridTextColumn Header="序号" Binding="{Binding ID}"/>
+                            <DataGridTextColumn Header="名称" Binding="{Binding Name}"/>
+                            <DataGridTemplateColumn Header="数值" IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!-- 给TextBlock绑定双击事件 -->
+                                    <TextBlock Background="LightSkyBlue"  >
+                                        <TextBlock.Text>
+                                            <!-- 多值绑定：同时传Value和DisplayType给转换器 -->
+                                            <MultiBinding Converter="{StaticResource ValueDisplayConverter}">
+                                                <Binding Path="Value"/>
+                                                <Binding Path="DisplayType"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <!-- 鼠标悬浮显示手型，提升体验 -->
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="指令" Binding="{Binding Command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <!-- 第五列：按钮列 -->
+                            <DataGridTemplateColumn Header="写" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="写" 
+                                        Command="{Binding Source={x:Static local:AppViewModel.Instance}, Path=ModbusSet.ButtonCommand}"
+                                        CommandParameter="{Binding}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="单位" Binding="{Binding Unit}"/>
+                            <DataGridTextColumn Header="范围" Binding="{Binding Rangle}"/>
+                            <!-- ：选择框列 -->
+                            <DataGridTemplateColumn Header="区块" Width="120" >
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox FontSize="10" 
+                                                  SelectedItem="{Binding SelectedOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  ItemsSource="{Binding DataContext.ModbusSet.ProtocolConfig.DataTypeOptions, 
+                              RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                                        <!-- 若选项是对象，需指定显示字段 -->
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="地址" Binding="{Binding Addr,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridTextColumn Header="数量" Binding="{Binding Number,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                        <DataGridTextColumn Header="位偏移" Binding="{Binding NOffSet,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridTextColumn Header="位数" Binding="{Binding NBit,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                            <!-- 以下是需要隐藏/显示的高级列（默认隐藏） -->
+                            <DataGridTextColumn Header="系数" 
+                                                Binding="{Binding Coefficient}" 
+                                                IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                                                Source={StaticResource ModbusSetProxy}, 
+                                                Converter={StaticResource BoolToVisConverter}}"/>
+                            <DataGridTextColumn Header="偏移" 
+                                                Binding="{Binding Offset}" 
+                                                 IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                                                 Source={StaticResource ModbusSetProxy}, 
+                                                 Converter={StaticResource BoolToVisConverter}}"/>
+                            <DataGridTextColumn Header="小数位数" 
+                                                Binding="{Binding DecimalPlaces}" 
+                                                IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                                                Source={StaticResource ModbusSetProxy}, 
+                                                Converter={StaticResource BoolToVisConverter}}"/>
+                
+                            <!-- ：选择框列 -->
+                        <DataGridTemplateColumn Header="传输类型" Width="120" 
+                        IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                        Source={StaticResource ModbusSetProxy}, 
+                        Converter={StaticResource BoolToVisConverter}}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox FontSize="10" 
+                                        SelectedItem="{Binding TransferType, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                        ItemsSource="{Binding DataContext.ModbusSet.ProtocolConfig.TransferTypeOptions, 
+                                        RelativeSource={RelativeSource AncestorType=DataGrid}}">
+                                        <ComboBox.ItemContainerStyle>
+                                            <Style TargetType="ComboBoxItem">
+                                                <Setter Property="IsEnabled">
+                                                    <Setter.Value>
+                                                        <MultiBinding Converter="{StaticResource TransferTypeEnableConverter}">
+                                                            <!-- 参数1：NBit属性 -->
+                                                            <Binding Path="DataContext.NBit" 
+                                                            RelativeSource="{RelativeSource AncestorType=DataGridRow}"/>
+                                                            <!-- 参数2：当前传输类型选项值 -->
+                                                            <Binding Path="."/>
+                                                            <!-- 参数3：SelectedOption属性（新增） -->
+                                                            <Binding Path="DataContext.SelectedOption" 
+                                                            RelativeSource="{RelativeSource AncestorType=DataGridRow}"/>
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ComboBox.ItemContainerStyle>
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- ：选择框列 -->
+                        <DataGridTemplateColumn Header="呈现类型" Width="120" 
+                                                Visibility="{Binding Data.IsAdvancedColumnsVisible, 
+                                                Source={StaticResource ModbusSetProxy}, 
+                                                Converter={StaticResource BoolToVisConverter}}" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox FontSize="10" 
+                                                      SelectedItem="{Binding DisplayType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      ItemsSource="{Binding DataContext.ModbusSet.ProtocolConfig.DisplayTypeOptions, 
+                                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                                    <!-- 若选项是对象，需指定显示字段 -->
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Header="字节序" 
+                                                Binding="{Binding ByteOrder,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
+                                                 IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                                                 Source={StaticResource ModbusSetProxy}, 
+                                                 Converter={StaticResource BoolToVisConverter}}"/>
+                            <DataGridTextColumn Header="字序" 
+                                                Binding="{Binding WordOrder,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
+                                                 IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                                                 Source={StaticResource ModbusSetProxy}, 
+                                                 Converter={StaticResource BoolToVisConverter}}"/>
+                            <DataGridCheckBoxColumn Header="是否绘制曲线" Binding="{Binding IsDrawCurve}" 
+                                                     IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                                                     Source={StaticResource ModbusSetProxy}, 
+                                                     Converter={StaticResource BoolToVisConverter}}"/>
+                            <DataGridTextColumn Header="间隔时间（ms）" 
+                                                Binding="{Binding IntervalTime}" 
+                                                IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
+                                                Source={StaticResource ModbusSetProxy}, 
+                                                Converter={StaticResource BoolToVisConverter}}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabControl>
+            <TextBox TextWrapping="Wrap" 
+                     Name="show_text"  
+                     Grid.Column="2"
+                     Grid.Row="3" 
+                     Margin="3,0,0,0" 
+                     AcceptsReturn="True" 
+                     Grid.RowSpan="2" 
+                     Text="{Binding ModbusSet.BoxStr,Mode=TwoWay}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     TextChanged="ShowText_TextChanged">
+            </TextBox>
+        </Grid>
+       
+    </Grid>
+</UserControl>
