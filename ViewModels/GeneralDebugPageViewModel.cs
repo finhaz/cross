@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using cross.Converters;
 using cross.database;
 using cross.Interfaces;
@@ -24,6 +25,7 @@ using System.Windows;
 //using System.Windows.Controls;
 using System.Windows.Input;
 //using System.Windows.Media;
+using ThingLing.Controls;
 
 namespace cross.Communication
 
@@ -109,7 +111,7 @@ namespace cross.Communication
             // 初始化数据（替代原AddDataTableColumns和添加行的逻辑）
             ModbusDataList = new ObservableCollection<ModbusDataItem>();
             //AddModbusDataItem();
-            setsurehander(null,null);
+            setsurehander(null);
             //ButtonCommand = new RelayCommand(OnButtonClick);
             ButtonCommand = new RelayCommand<object>(OnButtonClick);
             DataGridDoubleClickCommand = new RelayCommand<DataGrid>(ExecuteDataGridDoubleClick);
@@ -148,7 +150,7 @@ namespace cross.Communication
         }
 
 
-        public void setsurehander(object sender, RoutedEventArgs e)
+        public void setsurehander(object sender)
         {
             int radd = Int32.Parse(Sadd);
             int rsnum = Int32.Parse(Snum);
@@ -216,7 +218,7 @@ namespace cross.Communication
                     if (temp_Value.RWX==1)
                     {
                         // 跨线程更新DataTable（避免UI线程异常）
-                        Application.Current.Dispatcher.Invoke(() =>
+                        Dispatcher.UIThread.Invoke(() =>
                         {
                             //dtm.Rows[temp_Value.SN]["Value"] = temp_Value.VALUE;
                             var targetItem = ModbusDataList.FirstOrDefault(item => item.ID == (temp_Value.SN + 1));
@@ -245,7 +247,7 @@ namespace cross.Communication
                                         else
                                         {
                                             tempbval = 0;
-                                            MessageBox.Show("非正常数字！");
+                                            MessageBox.ShowAsync("非正常数字！");
                                             return;
                                         }
                                         break;
@@ -269,7 +271,7 @@ namespace cross.Communication
                                         else
                                         {
                                             tempbval = 0;
-                                            MessageBox.Show("非正常数字！");
+                                            MessageBox.ShowAsync("非正常数字！");
                                             return;
                                         }
                                             break;
@@ -358,7 +360,7 @@ namespace cross.Communication
                 // 原有串口判断逻辑保留
                 if (!_comm.IsConnected)
                 {
-                    MessageBox.Show("请打开串口！");
+                    MessageBox.ShowAsync("请打开串口！");
                     return;
                 }
 
@@ -379,7 +381,7 @@ namespace cross.Communication
                                 value = Convert.ToDouble(item.Command);
                             else
                             {
-                                MessageBox.Show("非正常数字");
+                                MessageBox.ShowAsync("非正常数字");
                                 return;
                             }
                             break;
@@ -393,7 +395,7 @@ namespace cross.Communication
                                 value = Convert.ToUInt64(item.Command);
                             else
                             {
-                                MessageBox.Show("非正常数字");
+                                MessageBox.ShowAsync("非正常数字");
                                 return;
                             }
                             break;
@@ -418,22 +420,22 @@ namespace cross.Communication
                     // 优化异常提示：区分空值和其他异常
                     if (ex is FormatException || ex is InvalidCastException)
                     {
-                        MessageBox.Show("输入命令必须是有效的数字！");
+                        MessageBox.ShowAsync("输入命令必须是有效的数字！");
                     }
                     else if (ex is NullReferenceException)
                     {
-                        MessageBox.Show("输入命令不能为空！");
+                        MessageBox.ShowAsync("输入命令不能为空！");
                     }
                     else
                     {
-                        MessageBox.Show($"发送失败：{ex.Message}");
+                        MessageBox.ShowAsync($"发送失败：{ex.Message}");
                     }
                 }
             }
             else
             {
                 // 兼容旧数据或参数异常的情况
-                MessageBox.Show("无法识别当前行数据！");
+                MessageBox.ShowAsync("无法识别当前行数据！");
             }
         }
 
@@ -515,7 +517,7 @@ namespace cross.Communication
                 {
                     // 核心修改：直接取实体类的Value属性，替换原rowView["Value"]
                     object value = item.Value ?? "空值"; // 实体类用null，替代原DBNull.Value
-                    MessageBox.Show($"当前数值：{value}", "数值详情");
+                    MessageBox.ShowAsync($"当前数值：{value}", "数值详情");
 
                     // 核心修改：直接取实体类的Addr属性（本身就是int，无需TryParse）
                     int addr = item.Addr;

@@ -31,7 +31,7 @@ namespace cross.ViewModels
             // 初始化默认通讯类型
             SelectedCommType = CommunicationType.SerialPort;
         }
-        /*
+        
         // *************************
         // 业务属性
         // *************************
@@ -41,7 +41,7 @@ namespace cross.ViewModels
             get => _modbusSet;
             set => SetProperty(ref _modbusSet, value);
         }
-
+        /*
         // 全局串口配置实例（所有页面共享）
         public SerialConfigViewModel SerialConfig { get; } = new SerialConfigViewModel();
 
