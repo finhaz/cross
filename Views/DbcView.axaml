@@ -59,38 +59,101 @@
             </StackPanel>
         </Border>
 
-        <!-- 右侧：DBC解析视图（绑定ViewModel的帧列表） -->
-        <Border Grid.Column="1" Background="White" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1">
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding DbcFrameList}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Expander IsExpanded="True" Margin="0,5,0,0" FontSize="13" FontWeight="Bold">
-                                <Expander.Header>
-                                    <MultiBinding StringFormat="{}{0} (十进制ID={1} | 十六进制ID=0x{1:X} | 长度={2}Byte)">
-                                        <Binding Path="FrameName"/>
-                                        <Binding Path="FrameId"/>
-                                        <Binding Path="DataLength"/>
-                                    </MultiBinding>
-                                </Expander.Header>
-                                <!-- 修改后代码：删掉全局的IsReadOnly="True"，然后给【除了原始值外的所有列】单独加IsReadOnly="True" -->
-                                <DataGrid ItemsSource="{Binding Signals}" AutoGenerateColumns="False" RowHeight="30" FontSize="12" Margin="0,5,0,0">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="信号名称" Binding="{Binding SignalName}" Width="180" IsReadOnly="True"/>
-                                        <DataGridTextColumn Header="原始值" Binding="{Binding RawValue, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-                                        <!-- ✅ 可编辑+实时绑定更新 -->
-                                        <DataGridTextColumn Header="物理值" Binding="{Binding PhysicalValue}" Width="120" IsReadOnly="True"/>
-                                        <DataGridTextColumn Header="单位" Binding="{Binding Unit}" Width="80" IsReadOnly="True"/>
-                                        <DataGridTextColumn Header="更新时间" Binding="{Binding UpdateTime}" Width="150" IsReadOnly="True"/>
-                                        <DataGridTextColumn Header="起始位" Binding="{Binding StartBit}" Width="80" IsReadOnly="True"/>
-                                        <DataGridTextColumn Header="位长" Binding="{Binding BitLength}" Width="80" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Expander>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </Border>
+<!-- 右侧：DBC解析视图（绑定ViewModel的帧列表） -->
+<Border Grid.Column="1" Background="White" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{Binding DbcFrameList}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Expander IsExpanded="True" Margin="0,5,0,0" FontSize="13" FontWeight="Bold">
+                        <Expander.Header>
+                            <MultiBinding StringFormat="{}{0} (十进制ID={1} | 十六进制ID=0x{1:X} | 长度={2}Byte)">
+                                <Binding Path="FrameName"/>
+                                <Binding Path="FrameId"/>
+                                <Binding Path="DataLength"/>
+                            </MultiBinding>
+                        </Expander.Header>
+
+                        <!-- 替换 DataGrid 的区域：使用 ListBox + 独立列头 -->
+                        <Border Background="White" Padding="5">
+                            <StackPanel>
+                                <!-- 列头（固定） -->
+                                <Border Background="#F0F0F0" Padding="5" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="80" />
+                                            <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="80" />
+                                            <ColumnDefinition Width="80" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="信号名称" FontWeight="Bold" Grid.Column="0" />
+                                        <TextBlock Text="原始值" FontWeight="Bold" Grid.Column="1" />
+                                        <TextBlock Text="物理值" FontWeight="Bold" Grid.Column="2" />
+                                        <TextBlock Text="单位" FontWeight="Bold" Grid.Column="3" />
+                                        <TextBlock Text="更新时间" FontWeight="Bold" Grid.Column="4" />
+                                        <TextBlock Text="起始位" FontWeight="Bold" Grid.Column="5" />
+                                        <TextBlock Text="位长" FontWeight="Bold" Grid.Column="6" />
+                                    </Grid>
+                                </Border>
+
+                                <!-- 数据列表（支持滚动，可编辑） -->
+                                <ListBox ItemsSource="{Binding Signals}" 
+                                         Background="Transparent" 
+                                         BorderThickness="0"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="5">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="180" />
+                                                        <ColumnDefinition Width="100" />
+                                                        <ColumnDefinition Width="120" />
+                                                        <ColumnDefinition Width="80" />
+                                                        <ColumnDefinition Width="150" />
+                                                        <ColumnDefinition Width="80" />
+                                                        <ColumnDefinition Width="80" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Text="{Binding SignalName}" 
+                                                               Grid.Column="0" 
+                                                               VerticalAlignment="Center" />
+
+                                                    <!-- 原始值可编辑 -->
+                                                    <TextBox Text="{Binding RawValue, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Grid.Column="1" 
+                                                             VerticalAlignment="Center" />
+
+                                                    <TextBlock Text="{Binding PhysicalValue}" 
+                                                               Grid.Column="2" 
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Unit}" 
+                                                               Grid.Column="3" 
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding UpdateTime}" 
+                                                               Grid.Column="4" 
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding StartBit}" 
+                                                               Grid.Column="5" 
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding BitLength}" 
+                                                               Grid.Column="6" 
+                                                               VerticalAlignment="Center" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </Border>
+                    </Expander>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</Border>
     </Grid>
 </UserControl>
