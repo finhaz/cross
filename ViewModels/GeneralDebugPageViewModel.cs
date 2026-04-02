@@ -35,9 +35,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using System;
+using cross.Communication;
 
-
-namespace cross.Communication
+namespace cross.ViewModels
 
 {
     public class GeneralDebugPageViewModel: ObservableObject
