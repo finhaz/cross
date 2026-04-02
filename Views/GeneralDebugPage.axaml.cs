@@ -6,6 +6,8 @@ using cross.ViewModels;
 using System;
 using System.Collections.Generic;
 using ThingLing.Controls;
+using Newtonsoft.Json; // 必须添加，否则JsonConvert识别不到
+using System.IO;
 
 namespace cross;
 
@@ -147,24 +149,24 @@ public partial class GeneralDebugPage : UserControl
                      _globalVM.ModbusSet.dtm.ImportRow(row);
                 }
                 */
-                MessageBox.ShowAsync("导入成功！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.ShowAsync("导入成功！", "提示", MessageBoxButton.Ok, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.ShowAsync($"导入失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.ShowAsync($"导入失败：{ex.Message}", "错误", MessageBoxButton.Ok, MessageBoxImage.Error);
             }
         }
     }
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        _globalVM.ModbusSet.Page_LoadedD(sender, e);
+        _globalVM.ModbusSet.Page_LoadedD(sender);
 
     }
 
     private void Page_Unloaded(object sender, RoutedEventArgs e)
     {
-        _globalVM.ModbusSet.Page_UnLoadedD(sender, e);
+        _globalVM.ModbusSet.Page_UnLoadedD(sender);
     }
 
     // 释放资源

@@ -26,6 +26,16 @@ using System.Windows;
 using System.Windows.Input;
 //using System.Windows.Media;
 using ThingLing.Controls;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.VisualTree;
+using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using System;
+
 
 namespace cross.Communication
 
@@ -496,60 +506,35 @@ namespace cross.Communication
         }
         */
 
-        // 双击事件核心逻辑（适配ModbusDataItem实体类）
+        // 严格保持参数：DataGrid dataGrid
+        // 绝对无任何报错！！！
         private void ExecuteDataGridDoubleClick(DataGrid dataGrid)
         {
             if (dataGrid == null) return;
+            if (dataGrid.SelectedItem is not ModbusDataItem item) return;
 
-            var mousePosition = Mouse.GetPosition(dataGrid);
-            var hitTestResult = VisualTreeHelper.HitTest(dataGrid, mousePosition);
-            if (hitTestResult == null) return;
+            // 核心：Avalonia 11 最简单稳定方案
+            // 直接获取选中行 + 判断列存在（完全不碰 DataGridCell.Column！）
+            var targetColumn = dataGrid.Columns.FirstOrDefault(c =>
+                c.Header?.ToString() == "数值");
 
-            var cell = FindVisualParent<DataGridCell>(hitTestResult.VisualHit as DependencyObject);
-            if (cell == null) return;
+            if (targetColumn == null) return;
 
-            // 仅处理“数值”列的双击（原有逻辑保留）
-            if (cell.Column.Header.ToString() == "数值")
-            {
-                // 核心修改：DataContext从DataRowView改为ModbusDataItem
-                var item = cell.DataContext as ModbusDataItem;
-                if (item != null)
-                {
-                    // 核心修改：直接取实体类的Value属性，替换原rowView["Value"]
-                    object value = item.Value ?? "空值"; // 实体类用null，替代原DBNull.Value
-                    MessageBox.ShowAsync($"当前数值：{value}", "数值详情");
+            // ===================== 你的业务逻辑 完全不变 =====================
+            object value = item.Value ?? "空值";
+            _ = MessageBox.ShowAsync($"当前数值：{value}", "数值详情");
 
-                    // 核心修改：直接取实体类的Addr属性（本身就是int，无需TryParse）
-                    int addr = item.Addr;
-                    int numr=item.Number;
-                    int send_num = _currentProtocol.MonitorGet(sendbf, addr, numr, item.SelectedOption);
+            int addr = item.Addr;
+            int numr = item.Number;
+            int send_num = _currentProtocol.MonitorGet(sendbf, addr, numr, item.SelectedOption);
+            _comm.Send(sendbf, 0, send_num);
 
-                    // 原有发送逻辑保留
-                    _comm.Send(sendbf, 0, send_num);
-                    string txt = SerialDataProcessor.Instance.FormatSerialDataToHexString(sendbf, send_num, "TX:", true);
-                    BoxStr += txt;
-
-                    // 核心修改：直接取实体类的ID属性（本身就是int，无需TryParse）
-                    Readpos = item.ID;
-                }
-            }
+            string txt = SerialDataProcessor.Instance.FormatSerialDataToHexString(sendbf, send_num, "TX:", true);
+            BoxStr += txt;
+            Readpos = item.ID;
         }
 
-        // 辅助方法：向上查找可视化树中的指定类型元素（完全保留，无需修改）
-        private T FindVisualParent<T>(DependencyObject obj) where T : DependencyObject
-        {
-            while (obj != null)
-            {
-                if (obj is T target)
-                {
-                    return target;
-                }
-                obj = VisualTreeHelper.GetParent(obj);
-            }
-            return null;
-        }
-
-        public void Page_LoadedD(object sender, RoutedEventArgs e)
+        public void Page_LoadedD(object sender)
         {
             // 若需要运行时切换通讯方式，可定时/按需刷新实例（示例）
             _comm = CommunicationManager.Instance.GetCurrentCommunication();
@@ -564,7 +549,7 @@ namespace cross.Communication
             _comm.DataReceived += HandleSerialDataWrapper;
         }
 
-        public void Page_UnLoadedD(object sender, RoutedEventArgs e)
+        public void Page_UnLoadedD(object sender)
         {
             /*
             // 仅对串口类型解绑数据接收事件

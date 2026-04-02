@@ -24,7 +24,7 @@ namespace cross.ViewModels
         private AppViewModel()
         {
             // 初始化Modbusset实例
-            //_modbusSet = new GeneralDebugPageViewModel();
+            _modbusSet = new GeneralDebugPageViewModel();
             //_mcctronller = new DeviceControlPageViewModel();
             // 初始化ShellViewModel
             //ShellViewModel = new ShellViewModel();
