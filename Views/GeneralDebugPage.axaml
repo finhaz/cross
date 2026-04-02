@@ -193,16 +193,8 @@
                 <DataGrid x:Name="dataGrodx"
                                 ItemsSource="{Binding ModbusSet.ModbusDataList, Mode=TwoWay}"
                                 AutoGenerateColumns="False"
-                                CanUserAddRows="False">
-                        <!-- 使用Interactivity行为绑定命令（替代传统事件） -->
-                    <interactivity:Interaction.Triggers>
-                        <interactivity:EventTrigger EventName="MouseDoubleClick">
-                            <interactivity:InvokeCommandAction 
-                            Command="{Binding ModbusSet.DataGridDoubleClickCommand}"
-                            CommandParameter="{Binding ElementName=dataGrodx}"/>
-                            <!-- 直接传DataGrid控件 -->
-                        </interactivity:EventTrigger>
-                    </interactivity:Interaction.Triggers>
+                                CanUserAddRows="False"
+                                Click="ModbusSet.DataGridDoubleClickCommand">
                     <DataGrid.Columns>
                             <!-- 前四列：普通文本 -->
                             <DataGridTextColumn Header="序号" Binding="{Binding ID}"/>
