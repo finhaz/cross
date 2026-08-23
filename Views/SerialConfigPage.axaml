@@ -1,0 +1,272 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:cross.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="cross.Views.SerialConfigPage"
+             Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="110*"/>
+            <RowDefinition Height="52*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ============ 左侧配置栏 ============ -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26*"/>
+                    <ColumnDefinition Width="74*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="串口"
+                           HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="波特率"
+                           HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="校验位"
+                           HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Grid.Row="4" Text="数据位"
+                           HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Grid.Row="5" Text="停止位"
+                           HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center"/>
+
+                <ComboBox Name="cbPortName" Grid.Column="1" Grid.Row="1"
+                          Margin="2,1,10,1" FontSize="10"
+                          ItemsSource="{Binding Path=SerialConfig.PortConfig.PortNames}"
+                          SelectedItem="{Binding Path=SerialConfig.PortConfig.SelectedPortName, Mode=TwoWay}"
+                          IsEnabled="{Binding Path=SerialConfig.IsConfigEnabled}"/>
+
+                <ComboBox Name="cbBaudRate" Grid.Column="1" Grid.Row="2"
+                          Margin="2,1,10,1" FontSize="10"
+                          ItemsSource="{Binding Path=SerialConfig.PortConfig.BaudRates}"
+                          SelectedItem="{Binding Path=SerialConfig.PortConfig.SelectedBaudRate, Mode=TwoWay}"
+                          IsEnabled="{Binding Path=SerialConfig.IsConfigEnabled}"/>
+
+                <ComboBox Name="cbParity" Grid.Column="1" Grid.Row="3"
+                          Margin="2,1,10,1" FontSize="10"
+                          ItemsSource="{Binding Path=SerialConfig.PortConfig.ParityNames}"
+                          SelectedItem="{Binding Path=SerialConfig.PortConfig.SelectedParityName, Mode=TwoWay}"
+                          IsEnabled="{Binding Path=SerialConfig.IsConfigEnabled}"/>
+
+                <ComboBox Name="cbDataBits" Grid.Column="1" Grid.Row="4"
+                          Margin="2,1,10,1" FontSize="10"
+                          ItemsSource="{Binding Path=SerialConfig.PortConfig.DataBits}"
+                          SelectedItem="{Binding Path=SerialConfig.PortConfig.SelectedDataBit, Mode=TwoWay}"
+                          IsEnabled="{Binding Path=SerialConfig.IsConfigEnabled}"/>
+
+                <ComboBox Name="cbStopBits" Grid.Column="1" Grid.Row="5"
+                          Margin="2,1,10,1" FontSize="10"
+                          ItemsSource="{Binding Path=SerialConfig.PortConfig.StopBitValues}"
+                          SelectedItem="{Binding Path=SerialConfig.PortConfig.SelectedStopBit, Mode=TwoWay}"
+                          IsEnabled="{Binding Path=SerialConfig.IsConfigEnabled}"/>
+
+                <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Ellipse Name="comState" Grid.Column="0" Width="14" Height="14"
+                             Margin="10,0,6,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                             Fill="{Binding Path=SerialConfig.ComStateColor}"/>
+                    <Button Name="btOpenCom" Grid.Column="1"
+                            Content="{Binding Path=SerialConfig.OpenComButtonContent}"
+                            Margin="0,4,8,4" Click="btOpenCom_Click"/>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Button Content="清空显示" Margin="8,0,8,0" Grid.Row="0" Click="btClearView_Click"/>
+                <Button Content="停止显示" Margin="8,0,8,0" Grid.Row="1"/>
+                <CheckBox Name="ckAutoClear" Content="自动清空"
+                          Margin="10,0,0,0" Grid.Row="2" VerticalAlignment="Center"/>
+                <CheckBox Name="ck16View" Content="16进制显示"
+                          Margin="10,0,0,0" Grid.Row="3" VerticalAlignment="Center"
+                          IsChecked="{Binding Path=SerialConfig.IsHexView, Mode=TwoWay}"
+                          Click="ck16View_Click"/>
+                <Button Content="保存显示" Margin="8,0,8,0" Grid.Row="4" Click="btSaveDisplay_Click"/>
+                <Button Content="搜索空闲串口" Margin="8,0,8,0" Grid.Row="5" Click="btSearchPort_Click"/>
+            </Grid>
+        </Grid>
+
+        <!-- 分割线 -->
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+        <!-- ============ 右侧收发区 ============ -->
+        <Grid Grid.Column="2" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="160"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 接收区 -->
+            <Grid Grid.Row="0">
+                <TextBox x:Name="tbReceive"
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         
+                         Text="{Binding Path=SerialConfig.TbReceiveText, Mode=TwoWay}"
+                         Margin="0,0,0,0"/>
+            </Grid>
+
+            <!-- 发送区 -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Name="btSend" Content="发送"
+                            Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                            Margin="6,4,10,4" Click="btSend_Click"/>
+                    <Button Name="btExpend" Content="扩展"
+                            Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"
+                            Margin="6,4,10,4" Click="btExpend_Click"/>
+
+                    <CheckBox Name="ck16Send" Content="16进制发送"
+                              Grid.Row="0" Grid.Column="0" Margin="4,4,0,0"
+                              IsChecked="{Binding Path=SerialConfig.IsHexSend, Mode=TwoWay}"
+                              Click="ck16Send_Click"/>
+                    <CheckBox Name="ckAsciiView" Content="显示Ascii码"
+                              Grid.Row="1" Grid.Column="0" Margin="4,4,0,0"
+                              IsChecked="{Binding Path=SerialConfig.IsAsciiView, Mode=TwoWay}"
+                              Click="ckAsciiView_Click"/>
+                    <CheckBox Name="ckAdvantechCmd" Content="加回车符"
+                              Grid.Row="2" Grid.Column="0" Margin="4,4,0,0"
+                              IsChecked="{Binding Path=SerialConfig.IsAdvantechCmdChecked, Mode=TwoWay}"
+                              Click="ckAdvantechCmd_Click"/>
+                    <CheckBox Name="ckAutoSend" Content="自动发送"
+                              Grid.Row="3" Grid.Column="0" Margin="4,4,0,0"
+                              IsChecked="{Binding Path=SerialConfig.IsAutoSend, Mode=TwoWay}"
+                              Click="ckAutoSend_Click"/>
+
+                    <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal"
+                                VerticalAlignment="Center" Margin="4,0,0,0"
+                                IsVisible="{Binding Path=SerialConfig.TbIntervalTimeVisible}">
+                        <TextBlock Text="间隔(s)" Margin="0,0,4,0"/>
+                        <TextBox x:Name="tbIntervalTime" Width="50"
+                                 Text="{Binding Path=SerialConfig.TbIntervalTimeText, Mode=TwoWay}"
+                                 TextChanged="tbIntervalTime_TextChanged"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- 16 进制预览 -->
+                <TextBox x:Name="tb16View"
+                         Grid.Column="1" Grid.Row="0"
+                         Margin="3,0,0,0"
+                         IsReadOnly="True"
+                         
+                         TextWrapping="Wrap"
+                         Text="{Binding Path=SerialConfig.Tb16ViewText, Mode=OneWay}"
+                         IsVisible="{Binding Path=SerialConfig.Tb16ViewVisible}"/>
+
+                <!-- 发送输入 -->
+                <TextBox x:Name="tbSend"
+                         Grid.Column="1"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         
+                         Text="{Binding Path=SerialConfig.TbSendText, Mode=TwoWay}"
+                         Margin="3,1,0,1"
+                         TextChanged="tbSend_TextChanged"/>
+            </Grid>
+
+            <!-- 状态栏 -->
+            <Border Grid.Row="2" Background="#E5E7EB" Padding="4" Margin="4">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="状态：" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Path=SerialConfig.TbComStateText, Mode=TwoWay}"
+                           Foreground="Black" VerticalAlignment="Center" MinWidth="150"/>
+                <Separator Width="1" Margin="4,0,4,0"/>
+                <TextBlock Text="接收：" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Path=SerialConfig.ReceiveCount, Mode=TwoWay}"
+                           Foreground="Black" VerticalAlignment="Center" MinWidth="80"/>
+                <Separator Width="1" Margin="4,0,4,0"/>
+                <TextBlock Text="发送：" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Path=SerialConfig.SendCount, Mode=TwoWay}"
+                           Foreground="Black" VerticalAlignment="Center"/>
+            </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 扩展面板 -->
+        <Border Name="bdExpend" Grid.Column="2" Grid.Row="0"
+                BorderBrush="#D6D6D6" BorderThickness="1"
+                HorizontalAlignment="Right" Width="200" Margin="0,0,4,0"
+                IsVisible="{Binding Path=SerialConfig.ExpandVisible}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="67*"/>
+                    <ColumnDefinition Width="23*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="Hex" VerticalAlignment="Bottom" Margin="0,0,0,2"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="发送字符串"
+                           VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="发送"
+                           VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+
+                <ScrollViewer Grid.Row="1" >
+                    <ItemsControl x:Name="expandItems"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <Separator Height="1" Grid.Column="2" Grid.Row="1" Margin="0,0,0,20"
+                   Background="#ACACAC" VerticalAlignment="Bottom"/>
+    </Grid>
+</UserControl>

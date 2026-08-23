@@ -46,5 +46,8 @@
     <Compile Update="Views\ProIntroductionPage.axaml.cs">
       <DependentUpon>ProIntroductionPage.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\SerialConfigPage.axaml.cs">
+      <DependentUpon>SerialConfigPage.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

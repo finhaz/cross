@@ -136,5 +136,19 @@ namespace cross.Communication
             set => SetProperty(ref _selectedStopBitEnum, value);
         }
         #endregion
+
+        /// <summary>
+        /// 扫描并填充当前系统可用串口名
+        /// </summary>
+        public void InitPortNames()
+        {
+            PortNames.Clear();
+            try
+            {
+                foreach (var port in SerialPort.GetPortNames())
+                    PortNames.Add(port);
+            }
+            catch { /* 无串口或权限不足时静默忽略 */ }
+        }
     }
 }

@@ -33,16 +33,13 @@ namespace cross.Views
             MainContentControl.Content = new HomeView();
         }
 
-        // 数据管理
+        // 通讯配置界面
         private void DataManageButton_Click(object sender, RoutedEventArgs e)
         {
-
-            // 获取HomeView中选中的通讯类型
-            //switch (HomeView.SelectedCommType)
-            switch(_appViewModel.SelectedCommType)
+            switch (_appViewModel.SelectedCommType)
             {
                 case CommunicationType.SerialPort:
-                    MainContentControl.Content = new SerialDataView();
+                    MainContentControl.Content = new SerialConfigPage();
                     break;
                 case CommunicationType.Ethernet:
                     MainContentControl.Content = new EthernetDataView();
@@ -51,7 +48,7 @@ namespace cross.Views
                     MainContentControl.Content = new CANDataView();
                     break;
                 default:
-                    MainContentControl.Content = new SerialDataView(); // 默认串口
+                    MainContentControl.Content = new SerialConfigPage();
                     break;
             }
         }

@@ -1,4 +1,4 @@
-﻿using cross.Communication;
+using cross.Communication;
 using cross.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -41,17 +41,17 @@ namespace cross.ViewModels
             get => _modbusSet;
             set => SetProperty(ref _modbusSet, value);
         }
-        /*
+
         // 全局串口配置实例（所有页面共享）
         public SerialConfigViewModel SerialConfig { get; } = new SerialConfigViewModel();
 
+        /*
         private DeviceControlPageViewModel _mcctronller;
         public DeviceControlPageViewModel McController
         {
             get => _mcctronller;
             set => SetProperty(ref _mcctronller, value);
         }
-
 
         // 持有ShellViewModel（供全局访问）
         private ShellViewModel _shellViewModel;
