@@ -353,9 +353,9 @@ namespace cross.ViewModels
                 int numr = item.Number;
 
                 // 原有串口判断逻辑保留
-                if (!_comm.IsConnected)
+                if (_comm == null || !_comm.IsConnected)
                 {
-                    MessageBox.ShowAsync("请打开串口！");
+                    MessageBox.ShowAsync("请先打开通讯（串口/网络）！");
                     return;
                 }
 
@@ -493,7 +493,7 @@ namespace cross.ViewModels
 
         // 严格保持参数：DataGrid dataGrid
         // 绝对无任何报错！！！
-        private void ExecuteDataGridDoubleClick(DataGrid dataGrid)
+        public void ExecuteDataGridDoubleClick(DataGrid dataGrid)
         {
             if (dataGrid == null) return;
             if (dataGrid.SelectedItem is not ModbusDataItem item) return;
@@ -504,6 +504,17 @@ namespace cross.ViewModels
                 c.Header?.ToString() == "数值");
 
             if (targetColumn == null) return;
+
+            if (_comm == null)
+            {
+                _ = MessageBox.ShowAsync("请先打开通讯！", "提示");
+                return;
+            }
+            if (!_comm.IsConnected)
+            {
+                _ = MessageBox.ShowAsync("通讯未连接，请先打开！", "提示");
+                return;
+            }
 
             // ===================== 你的业务逻辑 完全不变 =====================
             object value = item.Value ?? "空值";
@@ -521,32 +532,22 @@ namespace cross.ViewModels
 
         public void Page_LoadedD(object sender)
         {
-            // 若需要运行时切换通讯方式，可定时/按需刷新实例（示例）
-            _comm = CommunicationManager.Instance.GetCurrentCommunication();
-            /*
-            // 仅对串口类型绑定数据接收事件（预留以太网扩展）
-            if (_comm is SerialCommunication serialComm)
+            try
             {
-                // 绑定串口数据接收事件（替代 CommonRes.CurrentDataHandler = HandleSerialData）
-                serialComm.DataReceived += HandleSerialDataWrapper;
-            }        
-            */
-            _comm.DataReceived += HandleSerialDataWrapper;
+                _comm = CommunicationManager.Instance.GetCurrentCommunication();
+                _comm.DataReceived += HandleSerialDataWrapper;
+            }
+            catch (InvalidOperationException)
+            {
+                // 通讯尚未在主界面配置，暂不订阅；等用户在主界面选择通讯方式后再加载即可
+                _comm = null;
+            }
         }
 
         public void Page_UnLoadedD(object sender)
         {
-            /*
-            // 仅对串口类型解绑数据接收事件
-            if (_comm is SerialCommunication serialComm)
-            {
-                // 解绑事件（替代 CommonRes.CurrentDataHandler 清空）
-                serialComm.DataReceived -= HandleSerialDataWrapper;
-            }
-            */
-
-            _comm.DataReceived -= HandleSerialDataWrapper;
-            // 释放ViewModel资源（原有逻辑保留）
+            if (_comm != null)
+                _comm.DataReceived -= HandleSerialDataWrapper;
             Dispose();
         }
 

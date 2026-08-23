@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
@@ -11,7 +12,7 @@ using System.IO;
 using System.Linq;
 using ThingLing.Controls;
 
-namespace cross;
+namespace cross.Views;
 
 public partial class GeneralDebugPage : UserControl
 {
@@ -134,5 +135,11 @@ public partial class GeneralDebugPage : UserControl
         if (comboBox?.SelectedItem == null) return;
         string selectedProtocol = comboBox.SelectedItem.ToString()!;
         _globalVM.ModbusSet.InitProtocol(selectedProtocol);
+    }
+
+    // 点击"数值"单元格：读取该条目当前值
+    private void NumCell_Tapped(object sender, TappedEventArgs e)
+    {
+        _globalVM.ModbusSet.ExecuteDataGridDoubleClick(dataGrodx);
     }
 }

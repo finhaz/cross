@@ -1,11 +1,12 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:cross.ViewModels"
              xmlns:converters="using:cross.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="cross.GeneralDebugPage">
+             x:Class="cross.Views.GeneralDebugPage"
+             Loaded="Page_Loaded" Unloaded="Page_Unloaded">
 
     <Grid>
         <Grid.Resources>
@@ -156,7 +157,7 @@
                     <DataGridTemplateColumn Header="数值" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Background="LightSkyBlue">
+                                <TextBlock Background="LightSkyBlue" Tapped="NumCell_Tapped">
                                     <TextBlock.Text>
                                         <MultiBinding Converter="{StaticResource ValueDisplayConverter}">
                                             <Binding Path="Value"/>
@@ -189,7 +190,7 @@
                             <DataTemplate>
                                 <ComboBox FontSize="10"
                                           SelectedItem="{Binding Path=SelectedOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          ItemsSource="{Binding Path=DataContext.Data.ProtocolConfig.DataTypeOptions,
+                                          ItemsSource="{Binding Path=DataContext.ModbusSet.ProtocolConfig.DataTypeOptions,
                                                     RelativeSource={RelativeSource AncestorType=DataGrid}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -221,7 +222,7 @@
                             <DataTemplate>
                                 <ComboBox FontSize="10"
                                           SelectedItem="{Binding Path=TransferType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          ItemsSource="{Binding Path=DataContext.Data.ProtocolConfig.TransferTypeOptions,
+                                          ItemsSource="{Binding Path=DataContext.ModbusSet.ProtocolConfig.TransferTypeOptions,
                                                     RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -234,7 +235,7 @@
                             <DataTemplate>
                                 <ComboBox FontSize="10"
                                           SelectedItem="{Binding Path=DisplayType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          ItemsSource="{Binding Path=DataContext.Data.ProtocolConfig.DisplayTypeOptions,
+                                          ItemsSource="{Binding Path=DataContext.ModbusSet.ProtocolConfig.DisplayTypeOptions,
                                                     RelativeSource={RelativeSource AncestorType=DataGrid}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

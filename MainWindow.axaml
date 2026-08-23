@@ -1,4 +1,4 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:cross.ViewModels"
         x:Class="cross.Views.MainWindow"
@@ -68,10 +68,10 @@
                             Click="DataManageButton_Click"/>
                     <Button Content="通用调试界面" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
-                            Click="SettingsButton_Click"/>
+                            Click="GeneralDebugButton_Click"/>
                      <Button Content="设备控制界面" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
-                            Click="SettingsButton_Click"/>
+                            Click="DeviceControlButton_Click"/>
                     <Button Content="DBC界面" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
                             Click="DBCButton_Click"/>

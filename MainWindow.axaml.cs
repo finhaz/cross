@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using cross.Communication;
 using cross.ViewModels;
@@ -62,6 +62,11 @@ namespace cross.Views
             MainContentControl.Content = new SettingsView();
         }
 
+        // 通用调试界面
+        private void GeneralDebugButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = new GeneralDebugPage();
+        }
 
         private void DBCButton_Click(object sender, RoutedEventArgs e)
         {
@@ -71,6 +76,13 @@ namespace cross.Views
         private void ProfButton_Click(object sender, RoutedEventArgs e)
         {
             MainContentControl.Content = new AboutView();
+        }
+
+        private void DeviceControlButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainContentControl.Content = new TextBlock { Text = "设备控制界面（开发中）",
+                FontSize = 24, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
         }
 
         // 关于
