@@ -145,18 +145,36 @@ namespace cross.ViewModels
         }
 
 
+        // 新增条目名称（"添加条目"面板"参数名"输入框绑定）
+        private string _addItemName = "默认名称";
+        public string AddItemName
+        {
+            get => _addItemName;
+            set => SetProperty(ref _addItemName, value);
+        }
+
         public void setsurehander(object sender)
         {
-            int radd = Int32.Parse(Sadd);
-            int rsnum = Int32.Parse(Snum);
-            int i = 0;
-            for (i = 0; i < rsnum; i++)
+            if (!int.TryParse(Sadd, out int radd))
+            {
+                _ = ThingLing.Controls.MessageBox.ShowAsync(
+                    "起始地址必须是数字！", "输入错误", MessageBoxButton.Ok, MessageBoxImage.Warning);
+                return;
+            }
+            if (!int.TryParse(Snum, out int rsnum) || rsnum < 1)
+            {
+                _ = ThingLing.Controls.MessageBox.ShowAsync(
+                    "条目数量必须是正整数！", "输入错误", MessageBoxButton.Ok, MessageBoxImage.Warning);
+                return;
+            }
+
+            for (int i = 0; i < rsnum; i++)
             {
                 ModbusDataList.Add(new ModbusDataItem
                 {
                     ID = ModbusDataList.Count + 1,
-                    Name = "默认名称",
-                    Value = 0.0, // 默认浮点数
+                    Name = AddItemName,
+                    Value = 0.0,
                     Command = 0.0,
                     IsButtonClicked = false,
                     Unit = "",
@@ -170,14 +188,12 @@ namespace cross.ViewModels
                     Offset = 0,
                     DecimalPlaces = 2,
                     TransferType = ProtocolConfig.DSelectedTransferType,
-                    DisplayType = ProtocolConfig.DSelectedDisplayType, // 默认显示类型
+                    DisplayType = ProtocolConfig.DSelectedDisplayType,
                     ByteOrder = "大端",
                     WordOrder = "大端",
                     IsDrawCurve = false,
                     IntervalTime = 1000
                 });
-
-
                 radd = radd + 1;
             }
             Sadd = Convert.ToString(radd);
@@ -517,6 +533,34 @@ namespace cross.ViewModels
             }
 
             // ===================== 你的业务逻辑 完全不变 =====================
+            object value = item.Value ?? "空值";
+            _ = MessageBox.ShowAsync($"当前数值：{value}", "数值详情");
+
+            int addr = item.Addr;
+            int numr = item.Number;
+            int send_num = _currentProtocol.MonitorGet(sendbf, addr, numr, item.SelectedOption);
+            _comm.Send(sendbf, 0, send_num);
+
+            string txt = SerialDataProcessor.Instance.FormatSerialDataToHexString(sendbf, send_num, "TX:", true);
+            BoxStr += txt;
+            Readpos = item.ID;
+        }
+
+        // 通用读取：选中某条目（数值列点击或双击）→ 弹当前值并下发读指令
+        public void ReadItem(ModbusDataItem item)
+        {
+            if (item == null) return;
+            if (_comm == null)
+            {
+                _ = MessageBox.ShowAsync("请先打开通讯！", "提示");
+                return;
+            }
+            if (!_comm.IsConnected)
+            {
+                _ = MessageBox.ShowAsync("通讯未连接，请先打开！", "提示");
+                return;
+            }
+
             object value = item.Value ?? "空值";
             _ = MessageBox.ShowAsync($"当前数值：{value}", "数值详情");
 

@@ -21,13 +21,33 @@ public partial class GeneralDebugPage : UserControl
     public GeneralDebugPage()
     {
         InitializeComponent();
-        DataContext = _globalVM;
+        // 整页 DataContext 直接指向通用调试页 ViewModel。
+        var vm = _globalVM.ModbusSet;
+        DataContext = vm;
+        // 关键：在构造函数里（布局之前）就把 DataGrid 直接接到列表上，
+        // 避免 XAML 松散绑定在 ContentControl 嵌套场景下取不到集合导致表格无行。
+        dataGrodx.ItemsSource = vm.ModbusDataList;
     }
 
     private void setsure_click(object sender, RoutedEventArgs e)
     {
-        Setadd.IsVisible = false;
-        _globalVM.ModbusSet.setsurehander(sender);
+        try
+        {
+            var vm = _globalVM.ModbusSet;
+            // 诊断：显示点击确定时面板里实际读到的值，定位"添加不行"是
+            // 值没回传（TwoWay 绑定没生效）还是加了没刷新。
+            string before = $"名称=[{vm.AddItemName}] 数量=[{vm.Snum}] 地址=[{vm.Sadd}] 类型=[{vm.ProtocolConfig.SelectedDataType}]";
+            diag_text.Text = "[添加前] " + before;
+            vm.setsurehander(sender);
+            Setadd.IsVisible = false;
+            diag_text.Text = "[添加成功] " + before + $" 当前条目总数={vm.ModbusDataList.Count}";
+        }
+        catch (Exception ex)
+        {
+            diag_text.Text = "[添加失败] " + ex.Message;
+            _ = MessageBox.ShowAsync($"添加条目失败：{ex.Message}", "错误",
+                MessageBoxButton.Ok, MessageBoxImage.Error);
+        }
     }
 
     private void setcancel_click(object sender, RoutedEventArgs e)
@@ -40,18 +60,20 @@ public partial class GeneralDebugPage : UserControl
         Setadd.IsVisible = !Setadd.IsVisible;
     }
 
+    private void AdvancedColumns_Click(object sender, RoutedEventArgs e)
+    {
+        _globalVM.ModbusSet.IsAdvancedColumnsVisible = !_globalVM.ModbusSet.IsAdvancedColumnsVisible;
+    }
+
     private void ButtonDelete_Click(object sender, RoutedEventArgs e)
     {
-        var selectedItems = dataGrodx.SelectedItems.Cast<ModbusDataItem>().ToList();
-        if (selectedItems.Count == 0)
+        if (dataGrodx.SelectedItem is not ModbusDataItem selected)
         {
-            _ = MessageBox.ShowAsync("请指定行！", "提示", MessageBoxButton.Ok, MessageBoxImage.Warning);
+            _ = MessageBox.ShowAsync("请先在表格中选中要删除的行！", "提示",
+                MessageBoxButton.Ok, MessageBoxImage.Warning);
             return;
         }
-        foreach (var item in selectedItems)
-        {
-            _globalVM.ModbusSet.ModbusDataList.Remove(item);
-        }
+        _globalVM.ModbusSet.ModbusDataList.Remove(selected);
     }
 
     private void ShowText_TextChanged(object sender, TextChangedEventArgs e)
@@ -117,6 +139,26 @@ public partial class GeneralDebugPage : UserControl
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
         _globalVM.ModbusSet.Page_LoadedD(sender);
+
+        var vm = _globalVM.ModbusSet;
+        dataGrodx.ItemsSource = vm.ModbusDataList;
+
+        int listCount = vm.ModbusDataList?.Count ?? -1;
+        string diag = $"[通用调试] 已切换到 ItemsControl 渲染 | 条目数={listCount}";
+        if (listCount > 0)
+        {
+            var first = vm.ModbusDataList[0];
+            diag += $"; 第一行: 序号={first.ID}, 名称={first.Name}, 地址={first.Addr}, 呈现类型={first.DisplayType}";
+        }
+        else
+        {
+            diag += "; 列表为空！";
+        }
+        Console.WriteLine(diag);
+        if (diag_text != null)
+            diag_text.Text = diag;
+        if (show_text != null)
+            show_text.Text = diag;
     }
 
     private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -140,6 +182,10 @@ public partial class GeneralDebugPage : UserControl
     // 点击"数值"单元格：读取该条目当前值
     private void NumCell_Tapped(object sender, TappedEventArgs e)
     {
-        _globalVM.ModbusSet.ExecuteDataGridDoubleClick(dataGrodx);
+        var tb = sender as TextBlock;
+        if (tb?.DataContext is ModbusDataItem item)
+        {
+            _globalVM.ModbusSet.ReadItem(item);
+        }
     }
 }
