@@ -43,5 +43,8 @@
     <Compile Update="Views\DbcView.axaml.cs">
       <DependentUpon>DbcView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\ProIntroductionPage.axaml.cs">
+      <DependentUpon>ProIntroductionPage.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

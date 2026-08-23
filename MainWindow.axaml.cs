@@ -75,7 +75,7 @@ namespace cross.Views
 
         private void ProfButton_Click(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = new AboutView();
+            MainContentControl.Content = new ProIntroductionPage();
         }
 
         private void DeviceControlButton_Click(object sender, RoutedEventArgs e)

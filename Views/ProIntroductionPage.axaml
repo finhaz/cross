@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:cross.ViewModels"
+             xmlns:comm="using:cross.Communication"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="cross.Views.ProIntroductionPage"
+             Loaded="Page_Loaded">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="100*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                   Text="协议介绍" FontSize="30"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <TextBlock HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"
+                   Text="协议类型" FontSize="10"
+                   Margin="10,0,0,0" VerticalAlignment="Center"
+                   TextAlignment="Center"/>
+
+        <ComboBox Name="cPro" FontSize="10"
+                  Grid.Row="1" Grid.Column="1"
+                  Margin="60,0,60,0"
+                  ItemsSource="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ProtocolConfig.ProtocolTypeOptions}"
+                  SelectedItem="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ProtocolConfig.SelectedProtocolType, Mode=TwoWay}"/>
+
+        <StackPanel Grid.Column="1" Grid.Row="2" Grid.RowSpan="4"
+                    Margin="5"
+                    DataContext="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ProtocolConfig.SelectedProtocol}">
+
+            <TextBlock Text="{Binding Path=Name}" FontSize="14" FontWeight="Bold"/>
+            <TextBlock Text="报文结构：" FontSize="12" Foreground="#666"/>
+            <TextBlock Text="{Binding Path=FrameStructure}" FontSize="12" Margin="10,0,0,0"/>
+            <TextBlock Text="传输方式：" FontSize="12" Foreground="#666" Margin="0,2,0,0"/>
+            <TextBlock Text="{Binding Path=Transport}" FontSize="12" Margin="10,0,0,0"/>
+            <TextBlock Text="协议特点：" FontSize="12" Foreground="#666" Margin="0,2,0,0"/>
+            <TextBlock Text="{Binding Path=Features}" FontSize="12" Margin="10,0,0,0"/>
+            <Separator Margin="0,5,0,5" Background="#EEE"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
