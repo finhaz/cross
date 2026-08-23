@@ -1,33 +1,26 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+ï»¿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:cross.ViewModels"
-             xmlns:converters="clr-namespace:cross.Converters"
+             xmlns:vm="using:cross.ViewModels"
+             xmlns:converters="using:cross.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="cross.GeneralDebugPage">
 
     <Grid>
-        <!-- Ìí¼Ó×ÊÔ´£º²¼¶ûÖµ×ª¿É¼ûÐÔµÄ×ª»»Æ÷ -->
         <Grid.Resources>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
-            <local:BindingProxy x:Key="ModbusSetProxy" Data="{Binding ModbusSet}" x:DataType="local:AppViewModel"/>
             <converters:BoolToButtonTextConverter x:Key="BoolToButtonTextConverter"/>
             <converters:ValueDisplayConverter x:Key="ValueDisplayConverter"/>
             <converters:TransferTypeEnableConverter x:Key="TransferTypeEnableConverter"/>
+            <vm:BindingProxy x:Key="ModbusSetProxy"
+                             Data="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet}"/>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="26*"/>
             <ColumnDefinition Width="100*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.RowSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="122"  MinWidth="122" MaxWidth="200"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="90*"/>
-                <ColumnDefinition Width="2*"/>
-            </Grid.ColumnDefinitions>
-        </Grid>
+
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="26*"/>
@@ -41,83 +34,66 @@
                 <RowDefinition Height="20*"/>
                 <RowDefinition Height="20*"/>
                 <RowDefinition Height="100*"/>
-                <RowDefinition Height="20*"/>
-                <RowDefinition Height="20*"/>
-                <RowDefinition Height="20*"/>
             </Grid.RowDefinitions>
-            <TextBox 
-                      HorizontalAlignment="Left" 
-                      Grid.Row="0"
-                      Text="Ð­ÒéÀàÐÍ"
-                      FontSize="10" 
-                      Grid.ColumnSpan="2"  
-                      TextAlignment="Center"
-                      VerticalAlignment="Center"/>
-            <ComboBox
-                Name="cPro" 
-                FontSize="10" 
-                Grid.Row="0" 
-                Margin="60,1,0,1" 
-                Grid.ColumnSpan="2"
-                ItemsSource="{Binding Data.ProtocolConfig.ProtocolTypeOptions, Source={StaticResource ModbusSetProxy}}"
-                SelectedItem="{Binding Data.ProtocolConfig.SelectedProtocolType, Mode=TwoWay,Source={StaticResource ModbusSetProxy}}" 
-                SelectionChanged="cPro_SelectionChanged"/>
 
-            <Button x:Name="ButtonAdd" Width="100" Height="38" Margin="0,0,10,0" 
-                Background="#E0F2F1" Foreground="#00796B" 
-                Grid.Row="1" Grid.ColumnSpan="2" Click="ButtonAdd_Click">
+            <TextBox HorizontalAlignment="Left" Grid.Row="0"
+                     Text="åè®®ç±»åž‹" FontSize="10" Grid.ColumnSpan="2"
+                     TextAlignment="Center" VerticalAlignment="Center"/>
+
+            <ComboBox Name="cPro" FontSize="10" Grid.Row="0"
+                      Margin="60,1,0,1" Grid.ColumnSpan="2"
+                      ItemsSource="{Binding Path=Data.ProtocolConfig.ProtocolTypeOptions, Source={StaticResource ModbusSetProxy}}"
+                      SelectedItem="{Binding Path=Data.ProtocolConfig.SelectedProtocolType, Mode=TwoWay, Source={StaticResource ModbusSetProxy}}"
+                      SelectionChanged="cPro_SelectionChanged"/>
+
+            <Button x:Name="ButtonAdd" Width="100" Height="38" Margin="0,0,10,0"
+                    Background="#E0F2F1" Foreground="#00796B"
+                    Grid.Row="1" Grid.ColumnSpan="2" Click="ButtonAdd_Click">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource AddGeometry}" Margin="0,0,5,0"/>
-                    <TextBlock Text="Ìí¼ÓÌõÄ¿"/>
+                    <TextBlock Text="æ·»åŠ æ¡ç›®"/>
                 </StackPanel>
             </Button>
 
-            <Button x:Name="ButtonDelete" Width="100" Height="38" Margin="0,0,10,0" 
-                Background="#E0F2F1" Foreground="#00796B" 
-                Grid.Row="2" Grid.ColumnSpan="2" Click="ButtonDelete_Click">
+            <Button x:Name="ButtonDelete" Width="100" Height="38" Margin="0,0,10,0"
+                    Background="#E0F2F1" Foreground="#00796B"
+                    Grid.Row="2" Grid.ColumnSpan="2" Click="ButtonDelete_Click">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource DeleteGeometry}" Margin="0,0,5,0"/>
-                    <TextBlock Text="É¾³ýÌõÄ¿"/>
+                    <TextBlock Text="åˆ é™¤æ¡ç›®"/>
                 </StackPanel>
             </Button>
 
-            <Button x:Name="ExportConfigBtn" Width="100" Height="38" Margin="0,0,10,0" 
-                Background="#E0F2F1" Foreground="#00796B" 
-                Grid.Row="3" Grid.ColumnSpan="2" Click="ExportConfig_Click">
+            <Button x:Name="ExportConfigBtn" Width="100" Height="38" Margin="0,0,10,0"
+                    Background="#E0F2F1" Foreground="#00796B"
+                    Grid.Row="3" Grid.ColumnSpan="2" Click="ExportConfig_Click">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource ExportGeometry}" Margin="0,0,5,0"/>
-                    <TextBlock Text="µ¼³öÅäÖÃ"/>
+                    <TextBlock Text="å¯¼å‡ºé…ç½®"/>
                 </StackPanel>
             </Button>
 
-            <Button x:Name="ImportConfigBtn" Width="100" Height="38" Margin="0,0,10,0" 
-                Background="#E0F2F1" Foreground="#00796B" 
-                Grid.Row="4" Grid.ColumnSpan="2" Click="ImportConfig_Click">
+            <Button x:Name="ImportConfigBtn" Width="100" Height="38" Margin="0,0,10,0"
+                    Background="#E0F2F1" Foreground="#00796B"
+                    Grid.Row="4" Grid.ColumnSpan="2" Click="ImportConfig_Click">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource ImportGeometry}" Margin="0,0,5,0"/>
-                    <TextBlock Text="µ¼ÈëÅäÖÃ"/>
+                    <TextBlock Text="å¯¼å…¥é…ç½®"/>
                 </StackPanel>
             </Button>
-            
-            <Button 
-                Grid.Row="5" 
-                Grid.ColumnSpan="2"
-                Width="100" 
-                Height="38" 
-                Margin="0,0,10,0" 
-                Background="#E0F2F1" 
-                Foreground="#00796B"
-                Command="{Binding Data.ToggleAdvancedColumnsCommand,Source={StaticResource ModbusSetProxy}}">
+
+            <Button Grid.Row="5" Grid.ColumnSpan="2"
+                    Width="100" Height="38" Margin="0,0,10,0"
+                    Background="#E0F2F1" Foreground="#00796B"
+                    Command="{Binding Path=Data.ToggleAdvancedColumnsCommand, Source={StaticResource ModbusSetProxy}}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Width="16" Height="16" Fill="#00796B" Data="{StaticResource ToggleGeometry}" Margin="0,0,5,0"/>
-                    <!-- °ó¶¨¶¯Ì¬ÎÄ±¾£¬Ìæ´úÔ­ContentÊôÐÔ -->
-                    <TextBlock Text="{Binding Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
-                          Converter={StaticResource BoolToButtonTextConverter}}"/>
+                    <TextBlock Text="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                              Converter={StaticResource BoolToButtonTextConverter}}"/>
                 </StackPanel>
             </Button>
 
-
-            <Grid Name="Setadd" Grid.Row="6" Grid.ColumnSpan="2" IsVisible="False" Cursor="">
+            <Grid Name="Setadd" Grid.Row="6" Grid.ColumnSpan="2" IsVisible="False">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20*"/>
                     <ColumnDefinition Width="40*"/>
@@ -131,203 +107,162 @@
                     <RowDefinition Height="10*"/>
                 </Grid.RowDefinitions>
 
-                <!-- ¹Ì¶¨±êÇ©£º²ÎÊýÃû -->
-                <TextBox Text="²ÎÊýÃû" Grid.Row="0" IsReadOnly="True"/>
-                <!-- °ó¶¨ÊäÈë£º²ÎÊýÃûÊäÈë¿ò -->
+                <TextBox Text="å‚æ•°å" Grid.Row="0" IsReadOnly="True"/>
                 <TextBox Grid.Row="0" Grid.Column="1" />
 
-                <!-- ¹Ì¶¨±êÇ©£ºÊýÖµ -->
-                <TextBox Text="ÊýÖµ" Grid.Row="1" IsReadOnly="True"/>
-                <!-- °ó¶¨ÊäÈë£ºÊý¾ÝÌõÊý -->
-                <TextBox Text="{Binding Data.Snum,Source={StaticResource ModbusSetProxy}, Mode=TwoWay}" Grid.Row="1" Grid.Column="1"/>
+                <TextBox Text="æ•°å€¼" Grid.Row="1" IsReadOnly="True"/>
+                <TextBox Text="{Binding Path=Data.Snum, Source={StaticResource ModbusSetProxy}, Mode=TwoWay}"
+                         Grid.Row="1" Grid.Column="1"/>
 
-                <!-- ¹Ì¶¨±êÇ©£ºÀàÐÍ -->
-                <TextBox Text="ÀàÐÍ" Grid.Row="2" IsReadOnly="True"/>
-                <!-- ÏÂÀ­Ñ¡Ôñ¿ò£ºÐÞ¸´ÈßÓàGrid.ColumnSpan=2£¬ÊÊÅäÍ³Ò»ÑùÊ½ -->
-                <!-- Ô­Î»ÖÃÌæ»»ÎªÕâ¶Î´úÂë£¬½öÍâ²ã°üÁËBorder£¬¿Ø¼þ±¾ÌåÎÞÈÎºÎÐÞ¸Ä -->
-                <Border 
-                    Grid.Row="2" 
-                    Grid.Column="1" 
-                    CornerRadius="6" 
-                    Background="#E0F2F1"
-                    Margin="8"
-                    ClipToBounds="True">
-                        <ComboBox Name="cbProcho" 
-                            FontSize="10" 
-                            ItemsSource="{Binding Data.ProtocolConfig.DataTypeOptions,Source={StaticResource ModbusSetProxy}}"
-                            SelectedItem="{Binding Data.ProtocolConfig.SelectedDataType, Source={StaticResource ModbusSetProxy},Mode=TwoWay}"
-                            Background="Transparent" 
-                            BorderThickness="0"
-                            VerticalContentAlignment="Center"
-                            Padding="6,0"/>
+                <TextBox Text="ç±»åž‹" Grid.Row="2" IsReadOnly="True"/>
+                <Border Grid.Row="2" Grid.Column="1"
+                        CornerRadius="6" Background="#E0F2F1"
+                        Margin="8" ClipToBounds="True">
+                    <ComboBox Name="cbProcho" FontSize="10"
+                              ItemsSource="{Binding Path=Data.ProtocolConfig.DataTypeOptions, Source={StaticResource ModbusSetProxy}}"
+                              SelectedItem="{Binding Path=Data.ProtocolConfig.SelectedDataType, Source={StaticResource ModbusSetProxy}, Mode=TwoWay}"
+                              Background="Transparent" BorderThickness="0"
+                              VerticalContentAlignment="Center" Padding="6,0"/>
                 </Border>
 
-                <!-- ¹Ì¶¨±êÇ©£ºÆðÊ¼µØÖ· -->
-                <TextBox Text="ÆðÊ¼µØÖ·" Grid.Row="3" IsReadOnly="True"/>
-                <!-- °ó¶¨ÊäÈë£ºÆðÊ¼µØÖ· -->
-                <TextBox Text="{Binding Data.Sadd,Source={StaticResource ModbusSetProxy}, Mode=TwoWay}" Grid.Row="3" Grid.Column="1"/>
+                <TextBox Text="èµ·å§‹åœ°å€" Grid.Row="3" IsReadOnly="True"/>
+                <TextBox Text="{Binding Path=Data.Sadd, Source={StaticResource ModbusSetProxy}, Mode=TwoWay}"
+                         Grid.Row="3" Grid.Column="1"/>
 
-                <!-- È·¶¨°´Å¥£ºÓ¦ÓÃÍ³Ò»ÑùÊ½¡¢³ß´ç¡¢ÅäÉ« -->
-                <Button Content="È·¶¨" Grid.Row="5" Grid.Column="0" 
-                    Width="80" Height="38"
-                    Background="#E0F2F1" Foreground="#00796B"
-                    Click="setsure_click" />
-
-                <!-- È¡Ïû°´Å¥£ºÓ¦ÓÃÍ³Ò»ÑùÊ½¡¢³ß´ç¡¢ÅäÉ« -->
-                <Button Content="È¡Ïû" Grid.Row="5" Grid.Column="1" 
-                    Width="80" Height="38"
-                    Background="#E0F2F1" Foreground="#00796B"
-                    Click="setcancel_click" />
+                <Button Content="ç¡®å®š" Grid.Row="5" Grid.Column="0"
+                        Width="80" Height="38"
+                        Background="#E0F2F1" Foreground="#00796B"
+                        Click="setsure_click" />
+                <Button Content="å–æ¶ˆ" Grid.Row="5" Grid.Column="1"
+                        Width="80" Height="38"
+                        Background="#E0F2F1" Foreground="#00796B"
+                        Click="setcancel_click" />
             </Grid>
-
-
-
         </Grid>
 
-        <Grid  Grid.Column="2">
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="100*"/>
-                <RowDefinition Height="1*"/>
                 <RowDefinition Height="20*"/>
             </Grid.RowDefinitions>
-            <TabControl>
-                <DataGrid x:Name="dataGrodx"
-                                ItemsSource="{Binding Data.ModbusDataList,Source={StaticResource ModbusSetProxy}, Mode=TwoWay}"
-                                AutoGenerateColumns="False"
-                                >
-                    <DataGrid.Columns >
-                            <!-- Ç°ËÄÁÐ£ºÆÕÍ¨ÎÄ±¾ -->
-                            <DataGridTextColumn Header="ÐòºÅ" Binding="{Binding ID: local:ModbusDataItem!}"/>
-                            <DataGridTextColumn Header="Ãû³Æ" Binding="{Binding Name: local:ModbusDataItem!}"/>
-                            <DataGridTemplateColumn Header="ÊýÖµ" IsReadOnly="True">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <!-- ¸øTextBlock°ó¶¨Ë«»÷ÊÂ¼þ -->
-                                    <TextBlock Background="LightSkyBlue"  >
-                                        <TextBlock.Text>
-                                            <!-- ¶àÖµ°ó¶¨£ºÍ¬Ê±´«ValueºÍDisplayType¸ø×ª»»Æ÷ -->
-                                            <MultiBinding Converter="{StaticResource ValueDisplayConverter}">
-                                                <Binding Path="Value"/>
-                                                <Binding Path="DisplayType"/>
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
-                                    <!-- Êó±êÐü¸¡ÏÔÊ¾ÊÖÐÍ£¬ÌáÉýÌåÑé -->
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Ö¸Áî" Binding="{Binding Command: local:ModbusDataItem!, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <!-- µÚÎåÁÐ£º°´Å¥ÁÐ -->
-                            <DataGridTemplateColumn Header="Ð´" Width="100">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="Ð´" 
-                                        Command="{Binding Source={x:Static local:AppViewModel.Instance}, Path=ModbusSet.ButtonCommand}"
+
+            <DataGrid x:Name="dataGrodx" Grid.Row="0"
+                      ItemsSource="{Binding Path=Data.ModbusDataList, Source={StaticResource ModbusSetProxy}, Mode=TwoWay}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="åºå·" Binding="{Binding Path=ID}"/>
+                    <DataGridTextColumn Header="åç§°" Binding="{Binding Path=Name}"/>
+
+                    <DataGridTemplateColumn Header="æ•°å€¼" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Background="LightSkyBlue">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource ValueDisplayConverter}">
+                                            <Binding Path="Value"/>
+                                            <Binding Path="DisplayType"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="æŒ‡ä»¤"
+                                        Binding="{Binding Path=Command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <DataGridTemplateColumn Header="å†™" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="å†™"
+                                        Command="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ButtonCommand}"
                                         CommandParameter="{Binding}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="µ¥Î»" Binding="{Binding Unit: local:ModbusDataItem!}"/>
-                            <DataGridTextColumn Header="·¶Î§" Binding="{Binding Rangle: local:ModbusDataItem!}"/>
-                            <!-- £ºÑ¡Ôñ¿òÁÐ -->
-                            <DataGridTemplateColumn Header="Çø¿é" Width="120" >
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox FontSize="10" 
-                                                  SelectedItem="{Binding SelectedOption: local:ModbusDataItem!, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  ItemsSource="{Binding DataContext.ModbusSet.ProtocolConfig.DataTypeOptions, 
-                              RelativeSource={RelativeSource AncestorType=DataGrid}}" />
-                                        <!-- ÈôÑ¡ÏîÊÇ¶ÔÏó£¬ÐèÖ¸¶¨ÏÔÊ¾×Ö¶Î -->
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="µØÖ·" Binding="{Binding Addr: local:ModbusDataItem!,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="ÊýÁ¿" Binding="{Binding Number: local:ModbusDataItem!,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTextColumn Header="Î»Æ«ÒÆ" Binding="{Binding NOffSet: local:ModbusDataItem!,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="Î»Êý" Binding="{Binding NBit: local:ModbusDataItem!,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                            <!-- ÒÔÏÂÊÇÐèÒªÒþ²Ø/ÏÔÊ¾µÄ¸ß¼¶ÁÐ£¨Ä¬ÈÏÒþ²Ø£© -->
-                            <DataGridTextColumn Header="ÏµÊý" 
-                                                Binding="{Binding Coefficient: local:ModbusDataItem!}" 
-                                                IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                Source={StaticResource ModbusSetProxy}, 
-                                                Converter={StaticResource BoolToVisConverter}}"/>
-                            <DataGridTextColumn Header="Æ«ÒÆ" 
-                                                Binding="{Binding Offset: local:ModbusDataItem!}" 
-                                                 IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                 Source={StaticResource ModbusSetProxy}, 
-                                                 Converter={StaticResource BoolToVisConverter}}"/>
-                            <DataGridTextColumn Header="Ð¡ÊýÎ»Êý" 
-                                                Binding="{Binding DecimalPlaces: local:ModbusDataItem!}" 
-                                                IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                Source={StaticResource ModbusSetProxy}, 
-                                                Converter={StaticResource BoolToVisConverter}}"/>
-                
-                            <!-- £ºÑ¡Ôñ¿òÁÐ -->
-                        <DataGridTemplateColumn Header="´«ÊäÀàÐÍ" Width="120" 
-                        IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                        Source={StaticResource ModbusSetProxy}, 
-                        Converter={StaticResource BoolToVisConverter}}">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ComboBox FontSize="10" 
-                                        SelectedItem="{Binding TransferType: local:ModbusDataItem!, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                        ItemsSource="{Binding DataContext.ModbusSet.ProtocolConfig.TransferTypeOptions, 
-                                        RelativeSource={RelativeSource AncestorType=DataGrid}}">
-                                    </ComboBox>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                        <!-- £ºÑ¡Ôñ¿òÁÐ -->
-                        <DataGridTemplateColumn Header="³ÊÏÖÀàÐÍ" Width="120" 
-                                                IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                Source={StaticResource ModbusSetProxy}, 
-                                                Converter={StaticResource BoolToVisConverter}}" >
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ComboBox FontSize="10" 
-                                                      SelectedItem="{Binding DisplayType: local:ModbusDataItem!, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                      ItemsSource="{Binding DataContext.ModbusSet.ProtocolConfig.DisplayTypeOptions, 
-                                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" />
-                                    <!-- ÈôÑ¡ÏîÊÇ¶ÔÏó£¬ÐèÖ¸¶¨ÏÔÊ¾×Ö¶Î -->
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="å•ä½" Binding="{Binding Path=Unit}"/>
+                    <DataGridTextColumn Header="èŒƒå›´" Binding="{Binding Path=Rangle}"/>
 
-                        <DataGridTextColumn Header="×Ö½ÚÐò" 
-                                                Binding="{Binding ByteOrder: local:ModbusDataItem!,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
-                                                 IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                 Source={StaticResource ModbusSetProxy}, 
-                                                 Converter={StaticResource BoolToVisConverter}}"/>
-                            <DataGridTextColumn Header="×ÖÐò" 
-                                                Binding="{Binding WordOrder: local:ModbusDataItem!,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
-                                                 IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                 Source={StaticResource ModbusSetProxy}, 
-                                                 Converter={StaticResource BoolToVisConverter}}"/>
-                            <DataGridCheckBoxColumn Header="ÊÇ·ñ»æÖÆÇúÏß" Binding="{Binding IsDrawCurve: local:ModbusDataItem!}" 
-                                                     IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                     Source={StaticResource ModbusSetProxy}, 
-                                                     Converter={StaticResource BoolToVisConverter}}"/>
-                            <DataGridTextColumn Header="¼ä¸ôÊ±¼ä£¨ms£©" 
-                                                Binding="{Binding IntervalTime: local:ModbusDataItem!}" 
-                                                IsVisible="{Binding Data.IsAdvancedColumnsVisible, 
-                                                Source={StaticResource ModbusSetProxy}, 
-                                                Converter={StaticResource BoolToVisConverter}}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabControl>
-            <TextBox TextWrapping="Wrap" 
-                     Name="show_text"  
-                     Grid.Column="2"
-                     Grid.Row="3" 
-                     Margin="3,0,0,0" 
-                     AcceptsReturn="True" 
-                     Grid.RowSpan="2" 
-                     Text="{Binding Data.BoxStr,Source={StaticResource ModbusSetProxy},Mode=TwoWay}"
+                    <DataGridTemplateColumn Header="åŒºå—" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox FontSize="10"
+                                          SelectedItem="{Binding Path=SelectedOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          ItemsSource="{Binding Path=DataContext.Data.ProtocolConfig.DataTypeOptions,
+                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="åœ°å€"
+                                        Binding="{Binding Path=Addr, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="æ•°é‡"
+                                        Binding="{Binding Path=Number, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="ä½åç§»"
+                                        Binding="{Binding Path=NOffSet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="ä½æ•°"
+                                        Binding="{Binding Path=NBit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <DataGridTextColumn Header="ç³»æ•°" Binding="{Binding Path=Coefficient}"
+                                        IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                  Converter={StaticResource BoolToVisConverter}}"/>
+                    <DataGridTextColumn Header="åç§»" Binding="{Binding Path=Offset}"
+                                        IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                  Converter={StaticResource BoolToVisConverter}}"/>
+                    <DataGridTextColumn Header="å°æ•°ä½æ•°" Binding="{Binding Path=DecimalPlaces}"
+                                        IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                  Converter={StaticResource BoolToVisConverter}}"/>
+
+                    <DataGridTemplateColumn Header="ä¼ è¾“ç±»åž‹" Width="120"
+                                            IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                      Converter={StaticResource BoolToVisConverter}}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox FontSize="10"
+                                          SelectedItem="{Binding Path=TransferType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          ItemsSource="{Binding Path=DataContext.Data.ProtocolConfig.TransferTypeOptions,
+                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="å‘ˆçŽ°ç±»åž‹" Width="120"
+                                            IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                      Converter={StaticResource BoolToVisConverter}}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox FontSize="10"
+                                          SelectedItem="{Binding Path=DisplayType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          ItemsSource="{Binding Path=DataContext.Data.ProtocolConfig.DisplayTypeOptions,
+                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="å­—èŠ‚åº"
+                                        Binding="{Binding Path=ByteOrder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                  Converter={StaticResource BoolToVisConverter}}"/>
+                    <DataGridTextColumn Header="å­—åº"
+                                        Binding="{Binding Path=WordOrder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                  Converter={StaticResource BoolToVisConverter}}"/>
+                    <DataGridCheckBoxColumn Header="æ˜¯å¦ç»˜åˆ¶æ›²çº¿" Binding="{Binding Path=IsDrawCurve}"
+                                            IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                      Converter={StaticResource BoolToVisConverter}}"/>
+                    <DataGridTextColumn Header="é—´éš”æ—¶é—´ï¼ˆmsï¼‰" Binding="{Binding Path=IntervalTime}"
+                                        IsVisible="{Binding Path=Data.IsAdvancedColumnsVisible, Source={StaticResource ModbusSetProxy},
+                                                  Converter={StaticResource BoolToVisConverter}}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBox Grid.Row="1"
+                     TextWrapping="Wrap" Name="show_text"
+                     Margin="3,0,0,0" AcceptsReturn="True"
+                     Text="{Binding Path=Data.BoxStr, Source={StaticResource ModbusSetProxy}, Mode=TwoWay}"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     TextChanged="ShowText_TextChanged">
-            </TextBox>
+                     TextChanged="ShowText_TextChanged"/>
         </Grid>
-       
     </Grid>
 </UserControl>

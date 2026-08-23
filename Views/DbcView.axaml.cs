@@ -1,12 +1,10 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using cross.ViewModels;
-using Avalonia.Controls;
 using Avalonia.Platform;
 using System.Threading.Tasks;
-using Avalonia.Interactivity; // 用于RoutedEventArgs
 
 namespace cross;
 

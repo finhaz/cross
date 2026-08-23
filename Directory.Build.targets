@@ -1,0 +1,7 @@
+<Project>
+  <!-- Override Avalonia.BuildServices telemetry target.
+       The task fails in this environment because it cannot write to
+       %AppData%\Local\AvaloniaUI\BuildServices\buildtasks.log (access denied).
+       Telemetry is not needed for compilation, so we short-circuit the target. -->
+  <Target Name="AvaloniaStats" />
+</Project>
