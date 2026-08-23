@@ -141,12 +141,11 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Background="#E0F2F1" Padding="6" BorderBrush="#00796B" BorderThickness="0 0 2 2">
-                    <WrapPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
                         <TextBlock Text="序号" Width="48" FontSize="11" FontWeight="Bold"/>
                         <TextBlock Text="名称" Width="90" FontSize="11" FontWeight="Bold"/>
                         <TextBlock Text="数值" Width="70" FontSize="11" FontWeight="Bold"/>
@@ -174,7 +173,7 @@
                             <TextBlock Text="曲线" Width="36" FontSize="11" FontWeight="Bold"/>
                             <TextBlock Text="间隔ms" Width="50" FontSize="11" FontWeight="Bold"/>
                         </StackPanel>
-                    </WrapPanel>
+                    </StackPanel>
                 </Border>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -184,7 +183,7 @@
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <WrapPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Path=ID}" Width="48" FontSize="11"/>
                                     <TextBlock Text="{Binding Path=Name}" Width="90" FontSize="11"/>
                                     <TextBlock Background="LightSkyBlue" Padding="2,1" Width="70" FontSize="11" Tapped="NumCell_Tapped">
@@ -227,17 +226,13 @@
                                         <CheckBox IsChecked="{Binding Path=IsDrawCurve}" Width="36"/>
                                         <TextBox Text="{Binding Path=IntervalTime}" Width="50" FontSize="11"/>
                                     </StackPanel>
-                                </WrapPanel>
+                                </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </ScrollViewer>
 
-                <Border Grid.Row="2" Background="#FFF9C4" Padding="4" BorderBrush="#00796B" BorderThickness="0 2 0 0">
-                    <TextBlock x:Name="diag_text" Text="请刷新" FontSize="11" Foreground="#333"/>
-                </Border>
-
-                <TextBox Grid.Row="3"
+                <TextBox Grid.Row="2"
                          TextWrapping="Wrap" Name="show_text"
                          Margin="3,0,0,0" AcceptsReturn="True"
                          Text="{Binding Path=BoxStr, Mode=TwoWay}"

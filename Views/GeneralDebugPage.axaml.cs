@@ -34,17 +34,11 @@ public partial class GeneralDebugPage : UserControl
         try
         {
             var vm = _globalVM.ModbusSet;
-            // 诊断：显示点击确定时面板里实际读到的值，定位"添加不行"是
-            // 值没回传（TwoWay 绑定没生效）还是加了没刷新。
-            string before = $"名称=[{vm.AddItemName}] 数量=[{vm.Snum}] 地址=[{vm.Sadd}] 类型=[{vm.ProtocolConfig.SelectedDataType}]";
-            diag_text.Text = "[添加前] " + before;
             vm.setsurehander(sender);
             Setadd.IsVisible = false;
-            diag_text.Text = "[添加成功] " + before + $" 当前条目总数={vm.ModbusDataList.Count}";
         }
         catch (Exception ex)
         {
-            diag_text.Text = "[添加失败] " + ex.Message;
             _ = MessageBox.ShowAsync($"添加条目失败：{ex.Message}", "错误",
                 MessageBoxButton.Ok, MessageBoxImage.Error);
         }
@@ -142,23 +136,6 @@ public partial class GeneralDebugPage : UserControl
 
         var vm = _globalVM.ModbusSet;
         dataGrodx.ItemsSource = vm.ModbusDataList;
-
-        int listCount = vm.ModbusDataList?.Count ?? -1;
-        string diag = $"[通用调试] 已切换到 ItemsControl 渲染 | 条目数={listCount}";
-        if (listCount > 0)
-        {
-            var first = vm.ModbusDataList[0];
-            diag += $"; 第一行: 序号={first.ID}, 名称={first.Name}, 地址={first.Addr}, 呈现类型={first.DisplayType}";
-        }
-        else
-        {
-            diag += "; 列表为空！";
-        }
-        Console.WriteLine(diag);
-        if (diag_text != null)
-            diag_text.Text = diag;
-        if (show_text != null)
-            show_text.Text = diag;
     }
 
     private void Page_Unloaded(object sender, RoutedEventArgs e)
