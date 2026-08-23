@@ -1,11 +1,12 @@
-﻿using cross.Interfaces;
+using cross.Interfaces;
+using cross;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Linq;
 using System.Windows;
-using ThingLing.Controls;
+using Avalonia.Controls;
 
 namespace SomeNameSpace
 {
@@ -53,7 +54,7 @@ namespace SomeNameSpace
                 }
                 catch (Exception e)
                 {
-                    MessageBox.ShowAsync(e.Message);
+                    DialogHelper.ShowAsync(e.Message);
                 }
             }
             return result;
@@ -108,7 +109,7 @@ namespace SomeNameSpace
                 }
                 else
                 {
-                    MessageBox.ShowAsync(e.Message);
+                    DialogHelper.ShowAsync(e.Message);
                 }
             }
         }
@@ -122,7 +123,7 @@ namespace SomeNameSpace
         {
             if (IsTableExist(tableName))
             {
-                MessageBox.ShowAsync("表已存在，请检查名称！");
+                DialogHelper.ShowAsync("表已存在，请检查名称！");
                 return false;
             }
             else
@@ -166,7 +167,7 @@ namespace SomeNameSpace
                 }
                 catch (Exception e)
                 {
-                    MessageBox.ShowAsync(e.Message);
+                    DialogHelper.ShowAsync(e.Message);
                     return false;
                 }
             }
@@ -193,7 +194,7 @@ namespace SomeNameSpace
                 }
                 catch (Exception e)
                 {
-                    MessageBox.ShowAsync(e.Message);
+                    DialogHelper.ShowAsync(e.Message);
                     return false;
                 }
             }
@@ -219,7 +220,7 @@ namespace SomeNameSpace
             }
             catch (Exception)
             {
-                MessageBox.ShowAsync($"数据库中不存在表: {tableName}");
+                DialogHelper.ShowAsync($"数据库中不存在表: {tableName}");
                 return false;
             }
         }
@@ -249,7 +250,7 @@ namespace SomeNameSpace
             }
             catch (Exception e)
             {
-                MessageBox.ShowAsync(e.Message);
+                DialogHelper.ShowAsync(e.Message);
                 return null;
             }
         }

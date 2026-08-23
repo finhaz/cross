@@ -9,7 +9,7 @@
          nullable annotation noise (CS8632/8602/8604), deprecated FileDialog APIs
          retained for compatibility (CS0618), and unused fields/vars/events.
          These do not affect runtime behavior and are safe to revisit later. -->
-    <NoWarn>$(NoWarn);CS8632;CS8602;CS8604;CS0618;CS0414;CS0168;CS0067;CS0219;NETSDK1206</NoWarn>
+    <NoWarn>$(NoWarn);CS8632;CS8602;CS8604;CS0618;CS0414;CS0168;CS0067;CS0219;NETSDK1206;CS4014;CS0105</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,7 +35,6 @@
     <PackageReference Include="System.Data.Odbc" Version="6.0.0" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
-    <PackageReference Include="ThingLing.Avalonia.Controls.MessageBox" Version="2.0.0" />
     <PackageReference Include="Xaml.Behaviors.Avalonia" Version="11.3.9.4" />
     <PackageReference Include="Xaml.Behaviors.Interactions" Version="11.3.9.4" />
   </ItemGroup>

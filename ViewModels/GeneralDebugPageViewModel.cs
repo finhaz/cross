@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
@@ -20,7 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using ThingLing.Controls;
+using Avalonia.Controls;
 
 namespace cross.ViewModels
 
@@ -157,13 +157,13 @@ namespace cross.ViewModels
         {
             if (!int.TryParse(Sadd, out int radd))
             {
-                _ = ThingLing.Controls.MessageBox.ShowAsync(
+                _ = DialogHelper.ShowAsync(
                     "起始地址必须是数字！", "输入错误", MessageBoxButton.Ok, MessageBoxImage.Warning);
                 return;
             }
             if (!int.TryParse(Snum, out int rsnum) || rsnum < 1)
             {
-                _ = ThingLing.Controls.MessageBox.ShowAsync(
+                _ = DialogHelper.ShowAsync(
                     "条目数量必须是正整数！", "输入错误", MessageBoxButton.Ok, MessageBoxImage.Warning);
                 return;
             }
@@ -258,7 +258,7 @@ namespace cross.ViewModels
                                         else
                                         {
                                             tempbval = 0;
-                                            MessageBox.ShowAsync("非正常数字！");
+                                            DialogHelper.ShowAsync("非正常数字！");
                                             return;
                                         }
                                         break;
@@ -282,7 +282,7 @@ namespace cross.ViewModels
                                         else
                                         {
                                             tempbval = 0;
-                                            MessageBox.ShowAsync("非正常数字！");
+                                            DialogHelper.ShowAsync("非正常数字！");
                                             return;
                                         }
                                             break;
@@ -371,7 +371,7 @@ namespace cross.ViewModels
                 // 原有串口判断逻辑保留
                 if (_comm == null || !_comm.IsConnected)
                 {
-                    MessageBox.ShowAsync("请先打开通讯（串口/网络）！");
+                    DialogHelper.ShowAsync("请先打开通讯（串口/网络）！");
                     return;
                 }
 
@@ -392,7 +392,7 @@ namespace cross.ViewModels
                                 value = Convert.ToDouble(item.Command);
                             else
                             {
-                                MessageBox.ShowAsync("非正常数字");
+                                DialogHelper.ShowAsync("非正常数字");
                                 return;
                             }
                             break;
@@ -406,7 +406,7 @@ namespace cross.ViewModels
                                 value = Convert.ToUInt64(item.Command);
                             else
                             {
-                                MessageBox.ShowAsync("非正常数字");
+                                DialogHelper.ShowAsync("非正常数字");
                                 return;
                             }
                             break;
@@ -431,22 +431,22 @@ namespace cross.ViewModels
                     // 优化异常提示：区分空值和其他异常
                     if (ex is FormatException || ex is InvalidCastException)
                     {
-                        MessageBox.ShowAsync("输入命令必须是有效的数字！");
+                        DialogHelper.ShowAsync("输入命令必须是有效的数字！");
                     }
                     else if (ex is NullReferenceException)
                     {
-                        MessageBox.ShowAsync("输入命令不能为空！");
+                        DialogHelper.ShowAsync("输入命令不能为空！");
                     }
                     else
                     {
-                        MessageBox.ShowAsync($"发送失败：{ex.Message}");
+                        DialogHelper.ShowAsync($"发送失败：{ex.Message}");
                     }
                 }
             }
             else
             {
                 // 兼容旧数据或参数异常的情况
-                MessageBox.ShowAsync("无法识别当前行数据！");
+                DialogHelper.ShowAsync("无法识别当前行数据！");
             }
         }
 
@@ -523,18 +523,18 @@ namespace cross.ViewModels
 
             if (_comm == null)
             {
-                _ = MessageBox.ShowAsync("请先打开通讯！", "提示");
+                _ = DialogHelper.ShowAsync("请先打开通讯！", "提示");
                 return;
             }
             if (!_comm.IsConnected)
             {
-                _ = MessageBox.ShowAsync("通讯未连接，请先打开！", "提示");
+                _ = DialogHelper.ShowAsync("通讯未连接，请先打开！", "提示");
                 return;
             }
 
             // ===================== 你的业务逻辑 完全不变 =====================
             object value = item.Value ?? "空值";
-            _ = MessageBox.ShowAsync($"当前数值：{value}", "数值详情");
+            _ = DialogHelper.ShowAsync($"当前数值：{value}", "数值详情");
 
             int addr = item.Addr;
             int numr = item.Number;
@@ -552,17 +552,17 @@ namespace cross.ViewModels
             if (item == null) return;
             if (_comm == null)
             {
-                _ = MessageBox.ShowAsync("请先打开通讯！", "提示");
+                _ = DialogHelper.ShowAsync("请先打开通讯！", "提示");
                 return;
             }
             if (!_comm.IsConnected)
             {
-                _ = MessageBox.ShowAsync("通讯未连接，请先打开！", "提示");
+                _ = DialogHelper.ShowAsync("通讯未连接，请先打开！", "提示");
                 return;
             }
 
             object value = item.Value ?? "空值";
-            _ = MessageBox.ShowAsync($"当前数值：{value}", "数值详情");
+            _ = DialogHelper.ShowAsync($"当前数值：{value}", "数值详情");
 
             int addr = item.Addr;
             int numr = item.Number;

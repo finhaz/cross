@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ThingLing.Controls;
 
 namespace cross.Views;
 
@@ -39,7 +38,7 @@ public partial class GeneralDebugPage : UserControl
         }
         catch (Exception ex)
         {
-            _ = MessageBox.ShowAsync($"添加条目失败：{ex.Message}", "错误",
+            _ = DialogHelper.ShowAsync($"添加条目失败：{ex.Message}", "错误",
                 MessageBoxButton.Ok, MessageBoxImage.Error);
         }
     }
@@ -63,7 +62,7 @@ public partial class GeneralDebugPage : UserControl
     {
         if (dataGrodx.SelectedItem is not ModbusDataItem selected)
         {
-            _ = MessageBox.ShowAsync("请先在表格中选中要删除的行！", "提示",
+            _ = DialogHelper.ShowAsync("请先在表格中选中要删除的行！", "提示",
                 MessageBoxButton.Ok, MessageBoxImage.Warning);
             return;
         }
@@ -93,11 +92,11 @@ public partial class GeneralDebugPage : UserControl
                 var configList = _globalVM.ModbusSet.ModbusDataList.ToList();
                 string json = JsonConvert.SerializeObject(configList, Newtonsoft.Json.Formatting.Indented);
                 File.WriteAllText(fileName, json);
-                _ = MessageBox.ShowAsync("导出成功！", "提示", MessageBoxButton.Ok, MessageBoxImage.Information);
+                _ = DialogHelper.ShowAsync("导出成功！", "提示", MessageBoxButton.Ok, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                _ = MessageBox.ShowAsync($"导出失败：{ex.Message}", "错误", MessageBoxButton.Ok, MessageBoxImage.Error);
+                _ = DialogHelper.ShowAsync($"导出失败：{ex.Message}", "错误", MessageBoxButton.Ok, MessageBoxImage.Error);
             }
         }
     }
@@ -121,11 +120,11 @@ public partial class GeneralDebugPage : UserControl
                 {
                     _globalVM.ModbusSet.ModbusDataList.Add(item);
                 }
-                _ = MessageBox.ShowAsync("导入成功！", "提示", MessageBoxButton.Ok, MessageBoxImage.Information);
+                _ = DialogHelper.ShowAsync("导入成功！", "提示", MessageBoxButton.Ok, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                _ = MessageBox.ShowAsync($"导入失败：{ex.Message}", "错误", MessageBoxButton.Ok, MessageBoxImage.Error);
+                _ = DialogHelper.ShowAsync($"导入失败：{ex.Message}", "错误", MessageBoxButton.Ok, MessageBoxImage.Error);
             }
         }
     }

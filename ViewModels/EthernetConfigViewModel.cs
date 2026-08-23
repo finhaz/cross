@@ -12,7 +12,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using Avalonia.Threading;
-using ThingLing.Controls;
+using Avalonia.Controls;
 using cross.Communication;
 using cross.Interfaces;
 
@@ -299,7 +299,7 @@ namespace cross.ViewModels
             try
             {
                 AddLog("网络通讯配置已保存");
-                MessageBox.ShowAsync("配置保存成功！", "提示");
+                DialogHelper.ShowAsync("配置保存成功！", "提示");
             }
             catch (Exception ex)
             {
