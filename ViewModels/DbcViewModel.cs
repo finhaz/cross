@@ -1,4 +1,4 @@
-﻿using cross.Communication;
+using cross.Communication;
 using cross.Interfaces;
 using cross.Mvvm;
 using System;
@@ -86,8 +86,20 @@ namespace cross.ViewModels
         #region === 构造函数 ===
         public DbcViewModel()
         {
-            _comm = CommunicationManager.Instance.GetCurrentCommunication();
-            _comm.DataReceived += HandleSerialDataWrapper;
+            try
+            {
+                _comm = CommunicationManager.Instance.GetCurrentCommunication();
+                _comm.DataReceived += HandleSerialDataWrapper;
+            }
+            catch (InvalidOperationException)
+            {
+                // 用户尚未在首页选择通讯方式 → 不抛异常，给 UI 友好提示
+                AtModuleStatus = "⚠️ 请先在首页选择CAN通讯，再进入 DBC 界面";
+            }
+            catch (Exception ex)
+            {
+                AtModuleStatus = $"⚠️ DBC 初始化异常：{ex.Message}";
+            }
         }
 
         #endregion
