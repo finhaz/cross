@@ -49,5 +49,11 @@
     <Compile Update="Views\SerialConfigPage.axaml.cs">
       <DependentUpon>SerialConfigPage.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\CANConfigPage.axaml.cs">
+      <DependentUpon>CANConfigPage.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SerialConfigWindow.axaml.cs">
+      <DependentUpon>SerialConfigWindow.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

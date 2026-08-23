@@ -1,0 +1,190 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:cross.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="cross.Views.CANConfigPage"
+             Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部标题+串口配置按钮 -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Top">
+            <TextBlock Text="USB-CAN模块参数配置" FontSize="24" FontWeight="Bold" Foreground="#333"/>
+            <Button Content="串口配置" Width="100" Height="32"
+                    Margin="20,5,0,0" Background="#2196F3" Foreground="White"
+                    Click="BtnSerialConfig_Click"/>
+        </StackPanel>
+
+        <!-- 中间双列配置区 -->
+        <Grid Grid.Row="1" Margin="0,20,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧：基础配置 -->
+            <Border Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="1"
+                    CornerRadius="8" Padding="15" Background="White">
+                <StackPanel>
+                    <TextBlock Text="基础配置" FontSize="18" FontWeight="SemiBold"
+                               Margin="0,0,0,15" Foreground="#2196F3"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
+                        <TextBlock Text="工作模式：" Width="100" FontSize="14" Foreground="#666"/>
+                        <ComboBox Width="220" SelectedIndex="{Binding Path=SelectedWorkMode}"
+                                  ItemsSource="{Binding Path=WorkModeOptions}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Value}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
+                        <TextBlock Text="CAN波特率：" Width="100" FontSize="14" Foreground="#666"/>
+                        <ComboBox Width="220"
+                                  SelectedIndex="{Binding Path=SelectedCanBaud}"
+                                  ItemsSource="{Binding Path=CanBaudList}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Text}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <TextBlock Text="串口参数" FontSize="16" FontWeight="Medium"
+                               Margin="0,15,0,8" Foreground="#444"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="串口波特率：" Width="100" FontSize="14" Foreground="#666"/>
+                        <ComboBox Width="220"
+                                  SelectedIndex="{Binding Path=SelectedSerialBaud}"
+                                  ItemsSource="{Binding Path=PortConfig.BaudRates}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="数据位：" Width="100" FontSize="14" Foreground="#666"/>
+                        <ComboBox Width="220"
+                                  SelectedIndex="{Binding Path=SelectedDataBit}"
+                                  ItemsSource="{Binding Path=PortConfig.DataBits}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="停止位：" Width="100" FontSize="14" Foreground="#666"/>
+                        <ComboBox Width="220"
+                                  SelectedIndex="{Binding Path=SelectedStopBit}"
+                                  ItemsSource="{Binding Path=PortConfig.StopBitValues}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="校验位：" Width="100" FontSize="14" Foreground="#666"/>
+                        <ComboBox Width="220"
+                                  SelectedIndex="{Binding Path=SelectedParity}"
+                                  ItemsSource="{Binding Path=PortConfig.ParityNames}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 右侧：高级配置 -->
+            <Border Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="1"
+                    CornerRadius="8" Padding="15" Background="White">
+                <StackPanel>
+                    <TextBlock Text="高级配置" FontSize="18" FontWeight="SemiBold"
+                               Margin="0,0,0,15" Foreground="#2196F3"/>
+
+                    <TextBlock Text="数据透传格式" FontSize="16" FontWeight="Medium"
+                               Margin="0,0,0,8" Foreground="#444"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="透传使能：" Width="100" FontSize="14" Foreground="#666"/>
+                        <CheckBox IsChecked="{Binding Path=IsTransEnable}" Content="启用"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="帧格式：" Width="100" FontSize="14" Foreground="#666"/>
+                        <ComboBox Width="220"
+                                  SelectedIndex="{Binding Path=SelectedFrameFormat}"
+                                  ItemsSource="{Binding Path=FrameFormatOptions}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Value}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="标准帧ID：" Width="100" FontSize="14" Foreground="#666"/>
+                        <TextBox Width="220" Text="{Binding Path=StdId, Mode=TwoWay}"
+                                 TextAlignment="Right" Padding="5,0,5,0"/>
+                        <TextBlock Text=" (0-2047)" Margin="5,0,0,0" FontSize="12" Foreground="#999"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="扩展帧ID：" Width="100" FontSize="14" Foreground="#666"/>
+                        <TextBox Width="220" Text="{Binding Path=ExtId, Mode=TwoWay}"
+                                 TextAlignment="Right" Padding="5,0,5,0"/>
+                        <TextBlock Text=" (0-536870911)" Margin="5,0,0,0" FontSize="12" Foreground="#999"/>
+                    </StackPanel>
+
+                    <TextBlock Text="滤波器配置（第一组）" FontSize="16" FontWeight="Medium"
+                               Margin="0,15,0,8" Foreground="#444"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="滤波器使能：" Width="100" FontSize="14" Foreground="#666"/>
+                        <CheckBox IsChecked="{Binding Path=IsFilterEnable}" Content="启用"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="过滤ID：" Width="100" FontSize="14" Foreground="#666"/>
+                        <TextBox Width="220" Text="{Binding Path=FilterId, Mode=TwoWay}"
+                                 TextAlignment="Right" Padding="5,0,5,0"/>
+                        <TextBlock Text=" (0-0x1FFFFfff)" Margin="5,0,0,0" FontSize="12" Foreground="#999"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <TextBlock Text="掩码ID：" Width="100" FontSize="14" Foreground="#666"/>
+                        <TextBox Width="220" Text="{Binding Path=MaskId, Mode=TwoWay}"
+                                 TextAlignment="Right" Padding="5,0,5,0"/>
+                        <TextBlock Text=" (0-0x1FFFFfff)" Margin="5,0,0,0" FontSize="12" Foreground="#999"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 底部按钮+状态 -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Button Content="读取配置" Width="100" Height="38"
+                        Margin="0,0,10,0" Background="#E0F2F1" Foreground="#00796B"
+                        Click="BtnRead_Click"/>
+                <Button Content="保存配置" Width="100" Height="38"
+                        Margin="0,0,10,0" Background="#2196F3" Foreground="White"
+                        Click="BtnSave_Click"/>
+                <Button Content="恢复默认" Width="100" Height="38"
+                        Background="#FFC107" Foreground="#FF8F00"
+                        Click="BtnRestore_Click"/>
+            </StackPanel>
+
+            <TextBlock Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                       Margin="0,10,0,0" FontSize="14" Foreground="#666"
+                       Text="{Binding Path=AtModuleStatus}"/>
+        </Grid>
+    </Grid>
+</UserControl>

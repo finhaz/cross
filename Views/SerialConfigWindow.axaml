@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="cross.Views.SerialConfigWindow"
+        Title="串口配置" Width="500" Height="350"
+        CanResize="False" WindowStartupLocation="CenterOwner">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="串口号：" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="0" Grid.Column="1"
+                  ItemsSource="{Binding Path=PortConfig.PortNames}"
+                  SelectedItem="{Binding Path=PortConfig.SelectedPortName, Mode=TwoWay}"
+                  Margin="0,5"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="波特率：" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="1" Grid.Column="1"
+                  ItemsSource="{Binding Path=PortConfig.BaudRates}"
+                  SelectedIndex="{Binding Path=SelectedSerialBaud, Mode=TwoWay}"
+                  Margin="0,5"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="数据位：" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="2" Grid.Column="1"
+                  ItemsSource="{Binding Path=PortConfig.DataBits}"
+                  SelectedIndex="{Binding Path=SelectedDataBit, Mode=TwoWay}"
+                  Margin="0,5"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="校验位：" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="3" Grid.Column="1"
+                  ItemsSource="{Binding Path=PortConfig.ParityNames}"
+                  SelectedIndex="{Binding Path=SelectedParity, Mode=TwoWay}"
+                  Margin="0,5"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="停止位：" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="4" Grid.Column="1"
+                  ItemsSource="{Binding Path=PortConfig.StopBitValues}"
+                  SelectedIndex="{Binding Path=SelectedStopBit, Mode=TwoWay}"
+                  Margin="0,5"/>
+
+        <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+            <Button Content="刷新串口" Width="80" Height="35"
+                    Click="BtnRefreshPort_Click"/>
+            <Button Content="打开串口" Width="80" Height="35"
+                    Background="#107C10" Foreground="White"
+                    Click="BtnOpenPort_Click"/>
+            <Button Content="关闭串口" Width="80" Height="35"
+                    Background="#E64A19" Foreground="White"
+                    Click="BtnClosePort_Click"/>
+            <Button Content="取消" Width="80" Height="35"
+                    Click="BtnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

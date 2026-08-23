@@ -45,7 +45,7 @@ namespace cross.Views
                     MainContentControl.Content = new EthernetDataView();
                     break;
                 case CommunicationType.CAN:
-                    MainContentControl.Content = new CANDataView();
+                    MainContentControl.Content = new CANConfigPage();
                     break;
                 default:
                     MainContentControl.Content = new SerialConfigPage();
