@@ -13,6 +13,7 @@ namespace cross.ViewModels
 {
     /// <summary>
     /// CAN 配置 ViewModel（Avalonia 11 适配，基于 WPF CanConfigViewModel 迁移）。
+    /// 严格复刻 WPF 版的 AT 指令读写流程。
     /// </summary>
     public class CanConfigViewModel : ObservableObject, IDisposable
     {
@@ -26,20 +27,65 @@ namespace cross.ViewModels
         #endregion
 
         #region CAN 波特率
-        private int _selectedCanBaud = 5; // 默认 500Kbps
+        private int _selectedCanBaud = 3; // 默认 250Kbps（与 WPF 一致）
         public int SelectedCanBaud { get => _selectedCanBaud; set => SetProperty(ref _selectedCanBaud, value); }
         #endregion
 
         #region 串口配置
-        private int _selectedSerialBaud = 1; // 默认 9600
+        // 注意：SerialPortConfig.BaudRates = {4800,9600,19200,38400,43000,56000,115200}
+        //  默认 9600 = 索引 1
+        private int _selectedSerialBaud = 1;
         public int SelectedSerialBaud { get => _selectedSerialBaud; set => SetProperty(ref _selectedSerialBaud, value); }
 
-        private int _selectedDataBit = 0;
+        //{6,7,8}
+        //  默认 DataBit = 索引 1
+        private int _selectedDataBit = 2;
         public int SelectedDataBit { get => _selectedDataBit; set => SetProperty(ref _selectedDataBit, value); }
 
-        private int _selectedStopBit = 1;
+        //{1,2}
+        //  默认 StopBit = 索引 0
+        private int _selectedStopBit = 0;
         public int SelectedStopBit { get => _selectedStopBit; set => SetProperty(ref _selectedStopBit, value); }
 
+        // CAN 模块 AT 原始值：0=8位, 1=9位（内部存储，用于保存时下发 AT 指令）
+        private int _dataBitAtValue = 0;
+        public int DataBitAtValue { get => _dataBitAtValue; set => SetProperty(ref _dataBitAtValue, value); }
+
+        // 显示文本（绑定到 CAN 主区 ComboBox 的 SelectedItem）
+        private string _dataBitDisplay = "8位";
+        public string DataBitDisplay
+        {
+            get => _dataBitDisplay;
+            set
+            {
+                if (SetProperty(ref _dataBitDisplay, value))
+                {
+                    _dataBitAtValue = value switch { "8位" => 0, "9位" => 1, _ => 0 };
+                    OnPropertyChanged(nameof(DataBitAtValue));
+                }
+            }
+        }
+
+        // CAN 模块 AT 原始值：0=1位, 1=1.5位, 2=2位
+        private int _stopBitAtValue = 0;
+        public int StopBitAtValue { get => _stopBitAtValue; set => SetProperty(ref _stopBitAtValue, value); }
+
+        private string _stopBitDisplay = "1位";
+        public string StopBitDisplay
+        {
+            get => _stopBitDisplay;
+            set
+            {
+                if (SetProperty(ref _stopBitDisplay, value))
+                {
+                    _stopBitAtValue = value switch { "1位" => 0, "1.5位" => 1, "2位" => 2, _ => 0 };
+                    OnPropertyChanged(nameof(StopBitAtValue));
+                }
+            }
+        }
+
+        // SerialPortConfig.ParityNames = {"无","奇校验","偶校验"}
+        //  默认 "无" = 索引 0
         private int _selectedParity = 0;
         public int SelectedParity { get => _selectedParity; set => SetProperty(ref _selectedParity, value); }
 
@@ -96,13 +142,20 @@ namespace cross.ViewModels
             new KeyValuePair<int, string>(0, "标准帧"),
             new KeyValuePair<int, string>(1, "扩展帧")
         };
+
+        // CAN 模块 AT+USART_PARAM 返回的原始值：
+        //   数据位：0=8, 1=9
+        //   停止位：0=1, 1=1.5, 2=2
+        //  列表长度/顺序恰好匹配这些索引，使 SelectedIndex 直接等于 AT 原始值。
+        public List<string> DataBitOptions { get; } = new() { "8位", "9位" };
+        public List<string> StopBitOptions { get; } = new() { "1位", "1.5位", "2位" };
         #endregion
 
-        #region 串口事件
-        // 预留标记（原有逻辑的等待状态，暂未启用）
-        private StringBuilder _recvBuffer = new StringBuilder();
-        private TaskCompletionSource<string> _atCommandTcs;
+        #region 串口事件 - 复刻 WPF 版的 _isWaitingATOk + 轮询模式
+        private readonly StringBuilder _recvBuffer = new();
         private readonly object _lock = new object();
+        private const int AtCmdTimeout = 1200;
+        private bool _isWaitingATOk;
         #endregion
 
         public CanConfigViewModel()
@@ -122,67 +175,113 @@ namespace cross.ViewModels
                 _serialComm = (SerialCommunication)CommunicationManager.Instance.GetCurrentCommunication();
             }
 
-            _serialComm.Encoding = Encoding.Default;
+            _serialComm.Encoding = Encoding.ASCII;
             _serialComm.DataReceived += SerialComm_DataReceived;
+
             PortConfig.InitPortNames();
         }
 
+        /// <summary>
+        /// 串口数据接收（复刻 WPF 版）：仅在等待 AT 响应时积累数据
+        /// </summary>
         private void SerialComm_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            lock (_lock)
-            {
-                string received = Encoding.Default.GetString(e.Buffer, e.LastIndex, e.BufferLength);
-                _recvBuffer.Append(received);
-                if (_atCommandTcs != null &&
-                    (_recvBuffer.ToString().EndsWith("\r\nOK\r\n") ||
-                     _recvBuffer.ToString().EndsWith("\r\nERROR\r\n")))
-                {
-                    var tcs = _atCommandTcs;
-                    _atCommandTcs = null;
-                    tcs.SetResult(_recvBuffer.ToString());
-                    _recvBuffer.Clear();
-                }
-            }
-        }
-
-        #region AT 指令发送
-        private async Task<string> SendAtCommandAsync(string cmd, int timeoutMs = 1500)
-        {
-            if (_serialComm == null || !_serialComm.IsConnected)
-            {
-                AtModuleStatus = "串口未连接";
-                return string.Empty;
-            }
-
             try
             {
-                _atCommandTcs = new TaskCompletionSource<string>();
-                _recvBuffer.Clear();
-
-                byte[] bytes = Encoding.ASCII.GetBytes(cmd);
-                _serialComm.Send(bytes, 0, bytes.Length);
-
-                return await _atCommandTcs.Task.WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
+                if (_isWaitingATOk)
+                {
+                    string recvAscii = Encoding.ASCII.GetString(e.Buffer, e.LastIndex, e.BufferLength);
+                    lock (_lock) { _recvBuffer.Append(recvAscii); }
+                }
             }
-            catch (TimeoutException)
-            {
-                return string.Empty;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
+            catch { /* 静默忽略解析异常 */ }
         }
 
-        private async Task<bool> EnterConfigModeAsync()
+        #region AT 指令发送 - 复刻 WPF 版
+        /// <summary>
+        /// 发送普通 AT 指令（进入配置模式、保存等），等待 OK/ERROR
+        /// </summary>
+        private async Task<bool> SendAtCmdAsync(string cmd)
         {
-            string result = await SendAtCommandAsync("AT+CG\r\n", 1500);
-            return result.Contains("OK", StringComparison.OrdinalIgnoreCase);
+            lock (_lock) { _recvBuffer.Clear(); }
+            byte[] sendBytes = Encoding.ASCII.GetBytes(cmd);
+            _serialComm.Send(sendBytes, 0, sendBytes.Length);
+
+            int waitMs = 0;
+            while (waitMs < AtCmdTimeout)
+            {
+                await Task.Delay(50);
+                waitMs += 50;
+                lock (_lock)
+                {
+                    string recvStr = _recvBuffer.ToString();
+                    if (recvStr.Contains("OK\r\n"))
+                        return true;
+                    if (recvStr.Contains("ERROR\r\n"))
+                        return false;
+                }
+            }
+            return false;
         }
 
-        private async Task ExitConfigModeAsync()
+        /// <summary>
+        /// 发送查询类 AT 指令，返回以 + 开头的响应行
+        /// </summary>
+        private async Task<string> SendAtQueryCmdAsync(string cmd)
         {
-            await SendAtCommandAsync("AT+ET\r\n", 1000);
+            lock (_lock) { _recvBuffer.Clear(); }
+            byte[] sendBytes = Encoding.ASCII.GetBytes(cmd);
+            _serialComm.Send(sendBytes, 0, sendBytes.Length);
+
+            int waitMs = 0;
+            while (waitMs < AtCmdTimeout)
+            {
+                await Task.Delay(30);
+                waitMs += 30;
+                lock (_lock)
+                {
+                    string recvStr = _recvBuffer.ToString();
+                    if (!string.IsNullOrEmpty(recvStr))
+                    {
+                        foreach (var line in recvStr.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            if (line.StartsWith("+"))
+                                return line.Trim();
+                        }
+                        if (recvStr.Contains("ERROR"))
+                            return "ERROR";
+                    }
+                }
+            }
+            return string.Empty;
+        }
+
+        private string ParseAtResultValue(string atResult)
+        {
+            if (string.IsNullOrEmpty(atResult) || !atResult.Contains(":") || atResult == "ERROR")
+                return string.Empty;
+            return atResult.Split(new[] { ':' }, 2)[1].Trim();
+        }
+        #endregion
+
+        #region 进入/退出配置模式
+        private bool EnterConfigMode()
+        {
+            _isWaitingATOk = true;
+            bool ok = SendAtCmdAsync("AT+CG\r\n").GetAwaiter().GetResult();
+            if (!ok)
+            {
+                _isWaitingATOk = false;
+                return false;
+            }
+            return true;
+        }
+
+        private void ExitConfigMode()
+        {
+            _isWaitingATOk = true;
+            SendAtCmdAsync("AT+ET\r\n").GetAwaiter().GetResult();
+            _isWaitingATOk = false;
         }
         #endregion
 
@@ -207,12 +306,19 @@ namespace cross.ViewModels
                 {
                     SelectedPortName = PortConfig.SelectedPortName,
                     SelectedBaudRate = PortConfig.BaudRates[_selectedSerialBaud],
-                    SelectedDataBits = PortConfig.DataBits[_selectedDataBit],
+                    // CAN 模块 AT 原始值：0=8位, 1=9位
+                    SelectedDataBits = _dataBitAtValue == 1 ? 9 : 8,
                     SelectedParityName = PortConfig.ParityNames[_selectedParity],
-                    SelectedStopBit = PortConfig.StopBitValues[_selectedStopBit]
+                    SelectedStopBit = _stopBitAtValue switch
+                    {
+                        0 => 1,    // 1 位
+                        1 => 1,    // 1.5 位无法精确表示，退化为 1 位
+                        2 => 2,    // 2 位
+                        _ => 1
+                    }
                 };
                 _serialComm.Open(cfg);
-                _serialComm.Encoding = Encoding.Default;
+                _serialComm.Encoding = Encoding.ASCII;
                 AtModuleStatus = $"串口已打开: {PortConfig.SelectedPortName}";
                 return true;
             }
@@ -244,7 +350,7 @@ namespace cross.ViewModels
         }
         #endregion
 
-        #region 读取配置
+        #region 读取配置 - 复刻 WPF 版
         public async Task ReadCanConfigAsync()
         {
             if (_serialComm == null || !_serialComm.IsConnected)
@@ -253,111 +359,145 @@ namespace cross.ViewModels
                 return;
             }
 
-            AtModuleStatus = "正在读取 CAN 模块配置...";
-
+            AtModuleStatus = "正在读取模块配置...";
             try
             {
-                if (!await EnterConfigModeAsync())
+                _isWaitingATOk = true;
+                bool enterOk = await SendAtCmdAsync("AT+CG\r\n");
+                if (!enterOk)
                 {
-                    AtModuleStatus = "进入 AT 配置模式失败";
+                    AtModuleStatus = "❌ 读取失败：进入AT配置模式失败";
+                    _isWaitingATOk = false;
                     return;
                 }
 
-                await Task.Delay(50);
-                await ReadAndApply("AT+CAN_MODE=?\r\n");
-                await ReadAndApply("AT+CAN_BAUD=?\r\n");
-                await ReadAndApply("AT+USART_PARAM=?\r\n");
-                await ReadAndApply("AT+CAN_FRAMEFORMAT=?\r\n");
-                await ReadAndApply("AT+CAN_FILTER0=?\r\n");
+                // 1. CAN工作模式
+                string modeResult = await SendAtQueryCmdAsync("AT+CAN_MODE=?\r\n");
+                if (!string.IsNullOrEmpty(modeResult) && modeResult != "ERROR")
+                {
+                    string modeVal = ParseAtResultValue(modeResult);
+                    if (int.TryParse(modeVal, out int mode))
+                        SelectedWorkMode = mode;
+                }
 
-                await ExitConfigModeAsync();
-                AtModuleStatus = "配置读取完成";
+                // 2. CAN波特率
+                string baudResult = await SendAtQueryCmdAsync("AT+CAN_BAUD=?\r\n");
+                if (!string.IsNullOrEmpty(baudResult) && baudResult != "ERROR")
+                {
+                    string baudVal = ParseAtResultValue(baudResult);
+                    if (int.TryParse(baudVal, out int baud))
+                    {
+                        var match = CanBaudList.Find(x => x.Value == baud);
+                        if (match != null)
+                            SelectedCanBaud = CanBaudList.IndexOf(match);
+                    }
+                }
+
+                // 3. 串口参数
+                string usartResult = await SendAtQueryCmdAsync("AT+USART_PARAM=?\r\n");
+                if (!string.IsNullOrEmpty(usartResult) && usartResult != "ERROR")
+                {
+                    ParseUsartParam(usartResult);
+                }
+
+                // 4. 帧格式
+                string frameResult = await SendAtQueryCmdAsync("AT+CAN_FRAMEFORMAT=?\r\n");
+                if (!string.IsNullOrEmpty(frameResult) && frameResult != "ERROR")
+                {
+                    ParseCanFrameFormat(frameResult);
+                }
+
+                // 5. 滤波器
+                string filterResult = await SendAtQueryCmdAsync("AT+CAN_FILTER0=?\r\n");
+                if (!string.IsNullOrEmpty(filterResult) && filterResult != "ERROR")
+                {
+                    ParseCanFilter(filterResult);
+                }
+
+                // 退出配置模式
+                await SendAtCmdAsync("AT+ET\r\n");
+                _isWaitingATOk = false;
+                AtModuleStatus = "✅ 配置读取完成";
             }
             catch (Exception ex)
             {
-                AtModuleStatus = $"读取异常: {ex.Message}";
+                AtModuleStatus = $"❌ 读取异常：{ex.Message}";
+                _isWaitingATOk = false;
             }
         }
 
-        private async Task ReadAndApply(string cmd)
+        #region 专用解析方法
+        /// <summary>
+        /// +USART_PARAM:&lt;Baud&gt;,&lt;DataBit&gt;,&lt;StopBit&gt;,&lt;Parity&gt;
+        /// </summary>
+        private void ParseUsartParam(string usartResult)
         {
-            string result = await SendAtCommandAsync(cmd, 2000);
-            if (string.IsNullOrEmpty(result)) return;
-            string value = result.Replace("\r", "").Replace("\n", "").Trim();
-            ApplyParsedValue(cmd, value);
+            string paramStr = ParseAtResultValue(usartResult);
+            if (string.IsNullOrEmpty(paramStr)) return;
+
+            string[] parts = paramStr.Split(',');
+            if (parts.Length != 4) return;
+
+            if (int.TryParse(parts[0], out int baud) && PortConfig.BaudRates.Contains(baud))
+                SelectedSerialBaud = PortConfig.BaudRates.IndexOf(baud);
+
+            // 直接赋值 AT 原始值：0=8位, 1=9位
+            if (int.TryParse(parts[1], out int databit))
+            {
+                _dataBitAtValue = databit;
+                OnPropertyChanged(nameof(DataBitAtValue));
+                DataBitDisplay = databit == 1 ? "9位" : "8位";
+                SelectedDataBit= databit == 1 ?  1 : 0;
+            }
+
+            // 直接赋值 AT 原始值：0=1位, 1=1.5位, 2=2位
+            if (int.TryParse(parts[2], out int stopbit))
+            {
+                _stopBitAtValue = stopbit;
+                OnPropertyChanged(nameof(StopBitAtValue));
+                StopBitDisplay = stopbit switch { 0 => "1位", 1 => "1.5位", 2 => "2位", _ => "1位" };
+            }
+
+            if (int.TryParse(parts[3], out int parity))
+                SelectedParity = parity;
         }
 
-        private void ApplyParsedValue(string cmd, string value)
+        private void ParseCanFrameFormat(string frameResult)
         {
-            if (cmd.Contains("CAN_MODE"))
-            {
-                if (ParseIntFromResult(value, out int mode))
-                    SetProperty(ref _selectedWorkMode, mode);
-                return;
-            }
+            string paramStr = ParseAtResultValue(frameResult);
+            if (string.IsNullOrEmpty(paramStr)) return;
 
-            if (cmd.Contains("CAN_BAUD"))
-            {
-                if (ParseIntFromResult(value, out int baud))
-                {
-                    int idx = CanBaudList.FindIndex(x => x.Value == baud);
-                    if (idx >= 0) SetProperty(ref _selectedCanBaud, idx);
-                }
-                return;
-            }
+            string[] parts = paramStr.Split(',');
+            if (parts.Length != 4) return;
 
-            if (cmd.Contains("USART_PARAM"))
-            {
-                // 示例解析 "AT+USART_PARAM=115200,8,1,0"
-                string[] parts = value.Split(new[] { '=', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 5)
-                {
-                    if (int.TryParse(parts[1], out int sb) && PortConfig.BaudRates.Contains(sb))
-                        _selectedSerialBaud = PortConfig.BaudRates.IndexOf(sb);
-                    if (int.TryParse(parts[2], out int db) && PortConfig.DataBits.Contains(db))
-                        _selectedDataBit = PortConfig.DataBits.IndexOf(db);
-                    if (int.TryParse(parts[3], out int stpb))
-                        _selectedStopBit = stpb - 1;
-                    if (int.TryParse(parts[4], out int par))
-                        _selectedParity = par;
-                }
-                OnPropertyChanged(nameof(_selectedSerialBaud));
-                OnPropertyChanged(nameof(_selectedDataBit));
-                OnPropertyChanged(nameof(_selectedStopBit));
-                OnPropertyChanged(nameof(_selectedParity));
-                return;
-            }
+            if (int.TryParse(parts[0], out int enable))
+                IsTransEnable = enable == 1;
 
-            if (cmd.Contains("CAN_FRAMEFORMAT"))
-            {
-                string[] parts = value.Split(new[] { '=', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 5)
-                {
-                    if (int.TryParse(parts[1], out int trans))
-                        SetProperty(ref _isTransEnable, trans != 0);
-                    if (int.TryParse(parts[2], out int ff))
-                        SetProperty(ref _selectedFrameFormat, ff);
-                    if (parts.Length > 2) SetProperty(ref _stdId, parts[3]);
-                    if (parts.Length > 3) SetProperty(ref _extId, parts[4]);
-                }
-                return;
-            }
+            if (int.TryParse(parts[1], out int frameFormat))
+                SelectedFrameFormat = frameFormat;
 
-            if (cmd.Contains("CAN_FILTER0"))
-            {
-                string[] parts = value.Split(new[] { '=', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 5)
-                {
-                    if (int.TryParse(parts[1], out int fe))
-                        SetProperty(ref _isFilterEnable, fe != 0);
-                    if (parts.Length > 3) SetProperty(ref _filterId, parts[3]);
-                    if (parts.Length > 4) SetProperty(ref _maskId, parts[4]);
-                }
-            }
+            StdId = parts[2].Trim();
+            ExtId = parts[3].Trim();
+        }
+
+        private void ParseCanFilter(string filterResult)
+        {
+            string paramStr = ParseAtResultValue(filterResult);
+            if (string.IsNullOrEmpty(paramStr)) return;
+
+            string[] parts = paramStr.Split(',');
+            if (parts.Length != 4) return;
+
+            if (int.TryParse(parts[0], out int enable))
+                IsFilterEnable = enable == 1;
+
+            FilterId = parts[2].Trim();
+            MaskId = parts[3].Trim();
         }
         #endregion
+        #endregion
 
-        #region 保存配置
+        #region 保存配置 - 复刻 WPF 版
         public async Task SaveCanConfigAsync()
         {
             if (_serialComm == null || !_serialComm.IsConnected)
@@ -366,46 +506,48 @@ namespace cross.ViewModels
                 return;
             }
 
-            AtModuleStatus = "正在保存 CAN 配置...";
-
+            AtModuleStatus = "正在写入配置到模块...";
             try
             {
-                if (!await EnterConfigModeAsync())
+                _isWaitingATOk = true;
+                bool enterOk = await SendAtCmdAsync("AT+CG\r\n");
+                if (!enterOk)
                 {
-                    AtModuleStatus = "进入 AT 配置模式失败";
+                    AtModuleStatus = "❌ 保存失败：进入AT配置模式失败";
+                    _isWaitingATOk = false;
                     return;
                 }
 
-                await Task.Delay(50);
-                await SendAtCommandAsync($"AT+CAN_MODE={_selectedWorkMode}\r\n");
+                await SendAtCmdAsync($"AT+CAN_MODE={_selectedWorkMode}\r\n");
                 int baud = _selectedCanBaud >= 0 && _selectedCanBaud < CanBaudList.Count
                     ? CanBaudList[_selectedCanBaud].Value : 500000;
-                await SendAtCommandAsync($"AT+CAN_BAUD={baud}\r\n");
+                await SendAtCmdAsync($"AT+CAN_BAUD={baud}\r\n");
 
                 int serialBaud = _selectedSerialBaud >= 0 && _selectedSerialBaud < PortConfig.BaudRates.Count
                     ? PortConfig.BaudRates[_selectedSerialBaud] : 9600;
-                int dataBit = _selectedDataBit >= 0 && _selectedDataBit < PortConfig.DataBits.Count
-                    ? PortConfig.DataBits[_selectedDataBit] : 8;
-                await SendAtCommandAsync($"AT+USART_PARAM={serialBaud},{dataBit},{_selectedStopBit + 1},{_selectedParity}\r\n");
+                // dataBit/stopBit/parity 直接传 AT 原始值（0=8位/1=9位; 0=1/1=1.5/2=2; 0=无/1=奇/2=偶）
+                await SendAtCmdAsync($"AT+USART_PARAM={serialBaud},{_selectedDataBit},{_selectedStopBit},{_selectedParity}\r\n");
 
                 int transEn = _isTransEnable ? 1 : 0;
-                await SendAtCommandAsync($"AT+CAN_FRAMEFORMAT={transEn},{_selectedFrameFormat},{_stdId},{_extId}\r\n");
+                await SendAtCmdAsync($"AT+CAN_FRAMEFORMAT={transEn},{_selectedFrameFormat},{_stdId},{_extId}\r\n");
 
                 int filterEn = _isFilterEnable ? 1 : 0;
-                await SendAtCommandAsync($"AT+CAN_FILTER0={filterEn},0,{_filterId},{_maskId}\r\n");
+                await SendAtCmdAsync($"AT+CAN_FILTER0={filterEn},0,{_filterId},{_maskId}\r\n");
 
-                await SendAtCommandAsync("AT+SAVE\r\n");
-                await ExitConfigModeAsync();
-                AtModuleStatus = "配置保存成功，重启模块生效";
+                await SendAtCmdAsync("AT+SAVE\r\n");
+                await SendAtCmdAsync("AT+ET\r\n");
+                _isWaitingATOk = false;
+                AtModuleStatus = "✅ 配置保存成功，重启模块生效";
             }
             catch (Exception ex)
             {
-                AtModuleStatus = $"保存异常: {ex.Message}";
+                AtModuleStatus = $"❌ 保存异常：{ex.Message}";
+                _isWaitingATOk = false;
             }
         }
         #endregion
 
-        #region 恢复默认
+        #region 恢复默认 - 复刻 WPF 版
         public async Task RestoreDefaultAsync()
         {
             if (_serialComm == null || !_serialComm.IsConnected)
@@ -415,34 +557,45 @@ namespace cross.ViewModels
             }
 
             AtModuleStatus = "正在恢复出厂配置...";
-
             try
             {
-                if (!await EnterConfigModeAsync())
+                _isWaitingATOk = true;
+                bool enterOk = await SendAtCmdAsync("AT+CG\r\n");
+                if (!enterOk)
                 {
-                    AtModuleStatus = "进入 AT 配置模式失败";
+                    AtModuleStatus = "❌ 恢复失败：进入AT配置模式失败";
+                    _isWaitingATOk = false;
                     return;
                 }
 
-                await SendAtCommandAsync("AT+DEFAULT\r\n");
-                await ExitConfigModeAsync();
+                bool defOk = await SendAtCmdAsync("AT+DEFAULT\r\n");
+                await SendAtCmdAsync("AT+ET\r\n");
+                _isWaitingATOk = false;
 
-                ResetDefaults();
-                AtModuleStatus = "出厂配置恢复完成";
+                if (defOk)
+                {
+                    ResetDefaultValue();
+                    AtModuleStatus = "✅ 出厂配置恢复完成";
+                }
+                else
+                {
+                    AtModuleStatus = "❌ 恢复出厂配置失败";
+                }
             }
             catch (Exception ex)
             {
-                AtModuleStatus = $"恢复异常: {ex.Message}";
+                AtModuleStatus = $"❌ 恢复异常：{ex.Message}";
+                _isWaitingATOk = false;
             }
         }
 
-        private void ResetDefaults()
+        private void ResetDefaultValue()
         {
             _selectedWorkMode = 0; OnPropertyChanged(nameof(SelectedWorkMode));
-            _selectedCanBaud = 5; OnPropertyChanged(nameof(SelectedCanBaud));
+            _selectedCanBaud = 3; OnPropertyChanged(nameof(SelectedCanBaud));
             _selectedSerialBaud = 1; OnPropertyChanged(nameof(SelectedSerialBaud));
             _selectedDataBit = 0; OnPropertyChanged(nameof(SelectedDataBit));
-            _selectedStopBit = 1; OnPropertyChanged(nameof(SelectedStopBit));
+            _selectedStopBit = 0; OnPropertyChanged(nameof(SelectedStopBit));
             _selectedParity = 0; OnPropertyChanged(nameof(SelectedParity));
             _isTransEnable = true; OnPropertyChanged(nameof(IsTransEnable));
             _selectedFrameFormat = 0; OnPropertyChanged(nameof(SelectedFrameFormat));
@@ -453,15 +606,6 @@ namespace cross.ViewModels
             _maskId = "0"; OnPropertyChanged(nameof(MaskId));
         }
         #endregion
-
-        private bool ParseIntFromResult(string result, out int value)
-        {
-            string[] parts = result.Split(new[] { '=', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length >= 2 && int.TryParse(parts[1], out value))
-                return true;
-            value = 0;
-            return false;
-        }
 
         public void Dispose()
         {

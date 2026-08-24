@@ -1,4 +1,4 @@
-﻿using cross.Communication;
+using cross.Communication;
 using cross.ViewModels;
 using System;
 using System.Collections.Generic;
