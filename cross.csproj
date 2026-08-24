@@ -55,5 +55,8 @@
     <Compile Update="Views\SerialConfigWindow.axaml.cs">
       <DependentUpon>SerialConfigWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\DeviceControlPage.axaml.cs">
+      <DependentUpon>DeviceControlPage.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

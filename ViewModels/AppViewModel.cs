@@ -25,7 +25,8 @@ namespace cross.ViewModels
         {
             // 初始化Modbusset实例
             _modbusSet = new GeneralDebugPageViewModel();
-            //_mcctronller = new DeviceControlPageViewModel();
+            // 初始化DeviceControl实例
+            _deviceControl = new DeviceControlPageViewModel();
             // 初始化ShellViewModel
             //ShellViewModel = new ShellViewModel();
             // 初始化默认通讯类型
@@ -45,22 +46,13 @@ namespace cross.ViewModels
         // 全局串口配置实例（所有页面共享）
         public SerialConfigViewModel SerialConfig { get; } = new SerialConfigViewModel();
 
-        /*
-        private DeviceControlPageViewModel _mcctronller;
-        public DeviceControlPageViewModel McController
+        // 设备控制 ViewModel
+        private DeviceControlPageViewModel _deviceControl;
+        public DeviceControlPageViewModel DeviceControl
         {
-            get => _mcctronller;
-            set => SetProperty(ref _mcctronller, value);
+            get => _deviceControl;
+            set => SetProperty(ref _deviceControl, value);
         }
-
-        // 持有ShellViewModel（供全局访问）
-        private ShellViewModel _shellViewModel;
-        public ShellViewModel ShellViewModel
-        {
-            get => _shellViewModel;
-            set => SetProperty(ref _shellViewModel, value);
-        }
-        */
 
         // 全局通讯类型（供所有页面绑定）
         private CommunicationType _selectedCommType = CommunicationType.SerialPort;

@@ -1,0 +1,161 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="cross.Views.DeviceControlPage"
+             Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+
+    <Grid Margin="8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 左侧控制面板 -->
+        <Border Grid.Column="0" Background="#FFFFFF" BorderBrush="#E0E0E0"
+                BorderThickness="1" CornerRadius="6" Padding="10"
+                HorizontalAlignment="Left">
+            <StackPanel Spacing="6">
+                <TextBlock x:Name="StatusText"
+                           Text="系统停止运行" FontSize="13"
+                           Foreground="#E64A19" FontWeight="Bold"
+                           TextAlignment="Left" VerticalAlignment="Center"/>
+
+                <TextBlock Text="地址：" FontSize="12" Foreground="#666"/>
+                <TextBox x:Name="RunAddr" Width="100"
+                         Text="{Binding Path=RaddText, Mode=TwoWay}"
+                         HorizontalAlignment="Left"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="8">
+                    <Button Content="运行" Width="50" Height="28"
+                            Background="#4CAF50" Foreground="White"
+                            Click="BtRun_Click"/>
+                    <Button Content="停止" Width="50" Height="28"
+                            Background="#F44336" Foreground="White"
+                            Click="BtStop_Click"/>
+                </StackPanel>
+
+                <Button x:Name="BtShow"
+                        Content="{Binding Path=BshowContent, Mode=TwoWay}"
+                        Width="120" Height="30" HorizontalAlignment="Left"
+                        Background="#2196F3" Foreground="White"
+                        Command="{Binding Path=ButtonIncrease}"/>
+
+                <TextBlock Text="通讯协议选择" FontSize="12"
+                           Foreground="#666" Margin="0,6,0,0"/>
+                <ComboBox x:Name="CbPro" Width="120"
+                          SelectedItem="{Binding Path=ProtocolNum, Mode=TwoWay}"
+                          SelectionChanged="CbPro_SelectionChanged"/>
+
+                <TextBlock Text="选中数据库：" FontSize="12"
+                           Foreground="#666" Margin="0,6,0,0"/>
+                <TextBox Text="{Binding Path=DbFilePath}"
+                         Width="120" IsReadOnly="True"
+                         HorizontalAlignment="Left"/>
+
+                <Button Content="选择文件" Width="120" Height="26"
+                        HorizontalAlignment="Left"
+                        Command="{Binding Path=SelectDatabaseFileCommand}"/>
+
+                <Button Content="读取数据表" Width="120" Height="26"
+                        HorizontalAlignment="Left"
+                        Command="{Binding Path=LoadDatabaseTablesCommand}"/>
+
+                <Button Content="保存数据到数据库" Width="120" Height="26"
+                        HorizontalAlignment="Left"
+                        Background="#2196F3" Foreground="White"
+                        Command="{Binding Path=SaveDataToDbCommand}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 右侧数据面板 -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100*"/>
+                <RowDefinition Height="180"/>
+            </Grid.RowDefinitions>
+
+            <TabControl Grid.Row="0">
+                <TabItem Header="运行参数">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Auto">
+                        <ListBox x:Name="DataShowList"
+                                 SelectionMode="Single"
+                                 SelectionChanged="DataShowList_SelectionChanged"/>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="调试参数">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Auto">
+                            <ListBox x:Name="DataSetList"
+                                     SelectionMode="Single"
+                                     SelectionChanged="DataSetList_SelectionChanged"/>
+                        </ScrollViewer>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="0,4,0,0" Spacing="6">
+                            <TextBlock Text="选中行ID："
+                                       FontSize="12" Foreground="#666"/>
+                            <TextBlock x:Name="DebugSelectIdx"
+                                       Text="0" FontSize="12"/>
+                            <Button Content="设定"
+                                    Width="60" Height="26"
+                                    Background="#4CAF50" Foreground="White"
+                                    Click="BtDebugSet_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="修正系数">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Auto">
+                            <ListBox x:Name="DataFactorList"
+                                     SelectionMode="Single"
+                                     SelectionChanged="DataFactorList_SelectionChanged"/>
+                        </ScrollViewer>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="0,4,0,0" Spacing="6">
+                            <TextBlock Text="选中行ID："
+                                       FontSize="12" Foreground="#666"/>
+                            <TextBlock x:Name="FactorSelectIdx"
+                                       Text="0" FontSize="12"/>
+                            <Button Content="设定"
+                                    Width="60" Height="26"
+                                    Background="#4CAF50" Foreground="White"
+                                    Click="BtFactorSet_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+
+            <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#E0E0E0"
+                    BorderThickness="1" CornerRadius="6" Padding="6"
+                    Margin="0,8,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto">
+                    <TextBox x:Name="ShowTextBox"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             IsReadOnly="True"
+                             Text="{Binding Path=SerialTextBlock.Text}"
+                             FontFamily="Consolas" FontSize="11"
+                             TextChanged="ShowText_TextChanged"/>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

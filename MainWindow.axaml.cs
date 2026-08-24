@@ -77,9 +77,7 @@ namespace cross.Views
 
         private void DeviceControlButton_Click(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = new TextBlock { Text = "设备控制界面（开发中）",
-                FontSize = 24, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+            MainContentControl.Content = new DeviceControlPage();
         }
 
         // 关于
