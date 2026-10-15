@@ -72,9 +72,6 @@
                      <Button Content="设备控制界面" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
                             Click="DeviceControlButton_Click"/>
-                    <Button Content="DBC界面" Foreground="White" Background="#4B5563"
-                            Padding="16" HorizontalAlignment="Stretch"
-                            Click="DBCButton_Click"/>
                     <Button Content="通讯协议说明" Foreground="White" Background="#4B5563"
                             Padding="16" HorizontalAlignment="Stretch"
                             Click="ProfButton_Click"/>

@@ -59,15 +59,17 @@ namespace cross.Views
             MainContentControl.Content = new SettingsView();
         }
 
-        // 通用调试界面
+        // 通用调试界面：CAN通讯时进入DBC界面，其余通讯方式进入通用调试界面
         private void GeneralDebugButton_Click(object sender, RoutedEventArgs e)
         {
-            MainContentControl.Content = new GeneralDebugPage();
-        }
-
-        private void DBCButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainContentControl.Content = new DbcView();
+            if (_appViewModel.SelectedCommType == CommunicationType.CAN)
+            {
+                MainContentControl.Content = new DbcView();
+            }
+            else
+            {
+                MainContentControl.Content = new GeneralDebugPage();
+            }
         }
 
         private void ProfButton_Click(object sender, RoutedEventArgs e)
