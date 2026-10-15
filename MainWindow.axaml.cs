@@ -16,6 +16,9 @@ namespace cross.Views
             // 获取全局AppViewModel
             _appViewModel = AppViewModel.Instance;
             DataContext = _appViewModel;
+
+            // 启动时默认进入首页，避免右侧内容区为空白
+            MainContentControl.Content = new HomeView();
         }
 
         #region 汉堡按钮：折叠/展开侧边栏
