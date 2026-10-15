@@ -16,7 +16,7 @@ public partial class HomeView : UserControl
     {
         InitializeComponent();
     }
-    // Ñ¡Ôñ¿òÇĞ»»ÊÂ¼ş£º¸üĞÂÈ«¾Ö±äÁ¿
+    // é€‰æ‹©åˆ‡æ¢äº‹ä»¶ï¼šæ›´æ–°å…¨å±€ç»‘å®š
     private void CommTypeComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (CommTypeComboBox != null)
@@ -24,19 +24,20 @@ public partial class HomeView : UserControl
             switch (CommTypeComboBox.SelectedValue)
             {
                 case CommunicationType.SerialPort:
-                    // Ñ¡Ôñ´®¿Ú£º´´½¨´®¿ÚÊµÀı£¨½ö´´½¨£¬²»´ò¿ª/²»°ó¶¨ÊÂ¼ş£©
+                case CommunicationType.FESerialPort:
+                    // é€‰æ‹©ä¸²å£ / FEä¸²å£é€šè®¯ï¼šåˆ›å»ºä¸²å£å®ä¾‹ï¼ˆä»…åˆ›å»ºï¼Œä¸æ‰“å¼€/ä¸ç»‘å®šäº‹ä»¶ï¼‰
                     CommunicationManager.Instance.CreateSerialInstance();
                     break;
                 case CommunicationType.CAN:
-                    // Õë¶ÔTTL×ªCAN£¬´´½¨´®¿ÚÊµÀı£¨½ö´´½¨£¬²»´ò¿ª/²»°ó¶¨ÊÂ¼ş£©
+                    // é’ˆå¯¹TTLè½¬CANï¼Œåˆ›å»ºä¸²å£å®ä¾‹ï¼ˆä»…åˆ›å»ºï¼Œä¸æ‰“å¼€/ä¸ç»‘å®šäº‹ä»¶ï¼‰
                     CommunicationManager.Instance.CreateSerialInstance();
                     break;
                 case CommunicationType.Ethernet:
-                    // ½ö´´½¨ÍøÂçÍ¨Ñ¶¿ÕÊµÀı£¬²»Ö¸¶¨TCP/UDP
+                    // ä»…åˆ›å»ºç½‘ç»œé€šè®¯ç©ºå®ä¾‹ï¼Œä¸æŒ‡å®šTCP/UDP
                     CommunicationManager.Instance.CreateEthernetInstance();
                     break;
                 case CommunicationType.IIC:
-                    // Ô¤Áô£¬Ôİ²»´¦Àí
+                    // é¢„ç•™ï¼Œæš‚ä¸å¤„ç†
                     break;
             }
         }

@@ -41,7 +41,7 @@ namespace cross.ViewModels
             set => SetProperty(ref _bshowContent, value);
         }
 
-        private string _protocolNum = "Modbus RTU协议";
+        private string _protocolNum = "FE协议";
         public string ProtocolNum
         {
             get => _protocolNum;

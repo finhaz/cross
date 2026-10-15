@@ -39,6 +39,7 @@ namespace cross.Views
             switch (_appViewModel.SelectedCommType)
             {
                 case CommunicationType.SerialPort:
+                case CommunicationType.FESerialPort:
                     MainContentControl.Content = new SerialConfigPage();
                     break;
                 case CommunicationType.Ethernet:
@@ -59,27 +60,26 @@ namespace cross.Views
             MainContentControl.Content = new SettingsView();
         }
 
-        // 通用调试界面：CAN通讯时进入DBC界面，其余通讯方式进入通用调试界面
+        // 通用调试界面：CAN通讯时进入DBC界面，FE串口通讯时进入设备控制界面，其余进入通用调试界面
         private void GeneralDebugButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_appViewModel.SelectedCommType == CommunicationType.CAN)
+            switch (_appViewModel.SelectedCommType)
             {
-                MainContentControl.Content = new DbcView();
-            }
-            else
-            {
-                MainContentControl.Content = new GeneralDebugPage();
+                case CommunicationType.CAN:
+                    MainContentControl.Content = new DbcView();
+                    break;
+                case CommunicationType.FESerialPort:
+                    MainContentControl.Content = new DeviceControlPage();
+                    break;
+                default:
+                    MainContentControl.Content = new GeneralDebugPage();
+                    break;
             }
         }
 
         private void ProfButton_Click(object sender, RoutedEventArgs e)
         {
             MainContentControl.Content = new ProIntroductionPage();
-        }
-
-        private void DeviceControlButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainContentControl.Content = new DeviceControlPage();
         }
 
         // 关于

@@ -1,4 +1,4 @@
-﻿using cross.Interfaces;
+using cross.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,7 @@ namespace cross.Communication
     public enum CommunicationType
     {
         SerialPort,    // 串口
+        FESerialPort,  // FE串口通讯（本质仍为串口）
         Ethernet,       // 网络
         CAN,
         IIC

@@ -1,4 +1,4 @@
-﻿using cross.Communication;
+using cross.Communication;
 using cross.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -22,6 +22,7 @@ namespace cross.ViewModels
         public List<KeyValuePair<string, CommunicationType>> CommTypeOptions { get; } = new()
         {
             new KeyValuePair<string, CommunicationType>("串口通讯", CommunicationType.SerialPort),
+            new KeyValuePair<string, CommunicationType>("FE串口通讯", CommunicationType.FESerialPort),
             new KeyValuePair<string, CommunicationType>("网络通讯", CommunicationType.Ethernet),
             new KeyValuePair<string, CommunicationType>("CAN通讯", CommunicationType.CAN)
         };
@@ -44,7 +45,8 @@ namespace cross.ViewModels
             switch (SelectedCommType)
             {
                 case CommunicationType.SerialPort:
-                    // 选择串口：创建串口实例（仅创建，不打开/不绑定事件）
+                case CommunicationType.FESerialPort:
+                    // 选择串口 / FE串口通讯：创建串口实例（仅创建，不打开/不绑定事件）
                     CommunicationManager.Instance.CreateSerialInstance();
                     break;
                 case CommunicationType.CAN:
