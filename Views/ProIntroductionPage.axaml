@@ -26,16 +26,24 @@
                    Text="协议介绍" FontSize="30"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"
-                   Text="协议类型" FontSize="10"
-                   Margin="10,0,0,0" VerticalAlignment="Center"
-                   TextAlignment="Center"/>
+        <!-- 协议类型 + 选择框：Grid 两列并排，统一垂直居中，避免选择框撑满整行导致错位 -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="10,0,0,0"
+              VerticalAlignment="Center" HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <ComboBox Name="cPro" FontSize="10"
-                  Grid.Row="1" Grid.Column="1"
-                  Margin="60,0,60,0"
-                  ItemsSource="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ProtocolConfig.ProtocolTypeOptions}"
-                  SelectedItem="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ProtocolConfig.SelectedProtocolType, Mode=TwoWay}"/>
+            <TextBlock Grid.Column="0"
+                       Text="协议类型" FontSize="10"
+                       VerticalAlignment="Center"/>
+
+            <ComboBox Name="cPro" Grid.Column="1"
+                      FontSize="10" Width="150"
+                      Margin="8,0,0,0" VerticalAlignment="Center"
+                      ItemsSource="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ProtocolConfig.ProtocolTypeOptions}"
+                      SelectedItem="{Binding Source={x:Static vm:AppViewModel.Instance}, Path=ModbusSet.ProtocolConfig.SelectedProtocolType, Mode=TwoWay}"/>
+        </Grid>
 
         <StackPanel Grid.Column="1" Grid.Row="2" Grid.RowSpan="4"
                     Margin="5"

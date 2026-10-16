@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -20,9 +20,11 @@
         </Grid.ColumnDefinitions>
 
         <!-- ============ 左侧配置栏 ============ -->
-        <Grid Grid.Column="0">
+        <Grid Grid.Column="0" Grid.RowSpan="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="200"/>
+                <!-- 配置区实际需要 214px（24 + 30*5 + 40），固定 200 会溢出 14px，
+                     把最后一行的「打开串口」压到下方按钮区上 -->
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -96,35 +98,28 @@
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="26"/>
-                    <RowDefinition Height="26"/>
-                    <RowDefinition Height="26"/>
-                    <RowDefinition Height="26"/>
-                    <RowDefinition Height="26"/>
-                    <RowDefinition Height="26"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Button Content="清空显示" Margin="8,0,8,0" Grid.Row="0" Click="btClearView_Click"/>
-                <Button Content="停止显示" Margin="8,0,8,0" Grid.Row="1"/>
+            <!-- 改用 StackPanel + Spacing：原来每行固定 26px 且按钮上下外边距为 0，
+                 相邻按钮上下紧贴（26px 还小于按钮自然高度），视觉上互相压住 -->
+            <StackPanel Grid.Row="1" Spacing="8">
+                <Button Content="清空显示" Margin="8,0,8,0" Click="btClearView_Click"/>
+                <Button Content="停止显示" Margin="8,0,8,0"/>
                 <CheckBox Name="ckAutoClear" Content="自动清空"
-                          Margin="10,0,0,0" Grid.Row="2" VerticalAlignment="Center"/>
+                          Margin="10,0,0,0" VerticalAlignment="Center"/>
                 <CheckBox Name="ck16View" Content="16进制显示"
-                          Margin="10,0,0,0" Grid.Row="3" VerticalAlignment="Center"
+                          Margin="10,0,0,0" VerticalAlignment="Center"
                           IsChecked="{Binding Path=SerialConfig.IsHexView, Mode=TwoWay}"
                           Click="ck16View_Click"/>
-                <Button Content="保存显示" Margin="8,0,8,0" Grid.Row="4" Click="btSaveDisplay_Click"/>
-                <Button Content="搜索空闲串口" Margin="8,0,8,0" Grid.Row="5" Click="btSearchPort_Click"/>
-            </Grid>
+                <Button Content="保存显示" Margin="8,0,8,0" Click="btSaveDisplay_Click"/>
+                <Button Content="搜索空闲串口" Margin="8,0,8,0" Click="btSearchPort_Click"/>
+            </StackPanel>
         </Grid>
 
         <!-- 分割线 -->
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+        <GridSplitter Grid.Column="1" Grid.RowSpan="2" Width="5" HorizontalAlignment="Stretch"/>
 
         <!-- ============ 右侧收发区 ============ -->
-        <Grid Grid.Column="2" Grid.Row="0">
+        <!-- RowSpan="2"：跨满两行，让内部 * / 160 / Auto 的行分配把状态栏顶到页面最底部 -->
+        <Grid Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="160"/>
@@ -152,7 +147,8 @@
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+                <!-- 底部留 12px，避免「间隔(s)」贴着下方的状态栏 -->
+                <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,12">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
@@ -220,8 +216,8 @@
                          TextChanged="tbSend_TextChanged"/>
             </Grid>
 
-            <!-- 状态栏 -->
-            <Border Grid.Row="2" Background="#E5E7EB" Padding="4" Margin="4">
+            <!-- 状态栏：上边距 10px，和上方发送区拉开距离 -->
+            <Border Grid.Row="2" Background="#E5E7EB" Padding="4" Margin="4,10,4,4">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="状态：" VerticalAlignment="Center"/>
                 <TextBlock Text="{Binding Path=SerialConfig.TbComStateText, Mode=TwoWay}"
@@ -266,7 +262,5 @@
             </Grid>
         </Border>
 
-        <Separator Height="1" Grid.Column="2" Grid.Row="1" Margin="0,0,0,20"
-                   Background="#ACACAC" VerticalAlignment="Bottom"/>
     </Grid>
 </UserControl>

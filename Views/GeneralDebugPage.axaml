@@ -48,15 +48,25 @@
                 <RowDefinition Height="100*"/>
             </Grid.RowDefinitions>
 
-            <TextBox HorizontalAlignment="Left" Grid.Row="0"
-                     Text="协议类型" FontSize="10" Grid.ColumnSpan="2"
-                     TextAlignment="Center" VerticalAlignment="Center"/>
+            <!-- 协议类型 + 选择框：Grid 两列并排；第二列用 * 让选择框吃满剩余宽度，
+                 不写死宽度，避免超出左侧面板后被右侧显示区遮挡 -->
+            <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0,1,0,1"
+                  VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <ComboBox Name="cPro" FontSize="10" Grid.Row="0"
-                      Margin="60,1,0,1" Grid.ColumnSpan="2"
-                      ItemsSource="{Binding Path=ProtocolConfig.ProtocolTypeOptions}"
-                      SelectedItem="{Binding Path=ProtocolConfig.SelectedProtocolType, Mode=TwoWay}"
-                      SelectionChanged="cPro_SelectionChanged"/>
+                <TextBox Grid.Column="0"
+                         Text="协议类型" FontSize="10"
+                         TextAlignment="Center" VerticalAlignment="Center"/>
+
+                <ComboBox Name="cPro" Grid.Column="1" FontSize="10"
+                          Margin="8,0,0,0" VerticalAlignment="Center"
+                          ItemsSource="{Binding Path=ProtocolConfig.ProtocolTypeOptions}"
+                          SelectedItem="{Binding Path=ProtocolConfig.SelectedProtocolType, Mode=TwoWay}"
+                          SelectionChanged="cPro_SelectionChanged"/>
+            </Grid>
 
             <Button x:Name="ButtonAdd" Width="100" Height="38" Margin="0,0,10,0"
                     Background="#E0F2F1" Foreground="#00796B"

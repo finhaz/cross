@@ -63,7 +63,7 @@ namespace cross.Views
             MainContentControl.Content = new SettingsView();
         }
 
-        // 通用调试界面：CAN通讯时进入DBC界面，FE串口通讯时进入设备控制界面，其余进入通用调试界面
+        // 通讯调试界面：CAN通讯时进入DBC界面，FE串口通讯时进入设备控制界面，其余进入通用调试界面
         private void GeneralDebugButton_Click(object sender, RoutedEventArgs e)
         {
             switch (_appViewModel.SelectedCommType)
