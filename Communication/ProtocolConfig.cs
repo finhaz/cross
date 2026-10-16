@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,10 +21,10 @@ namespace cross.Communication
         { "线圈状态(RW)", "离散输入(RO)", "保持寄存器(RW)", "输入寄存器(RO)" };
 
         /// <summary>
-        /// 协议类型选项（Modbus RTU、FE、Modbus TCP）
+        /// 协议类型选项（Modbus RTU、FE、Modbus TCP、DBC）
         /// </summary>
         public ObservableCollection<string> ProtocolTypeOptions { get; set; } = new ObservableCollection<string>
-        { "Modbus RTU协议", "FE协议","Modbus TCP协议" };
+        { "Modbus RTU协议", "FE协议","Modbus TCP协议", "DBC协议" };
 
         /// <summary>
         /// 传输类型选项（有符号整数、无符号整数等）
@@ -65,6 +65,13 @@ namespace cross.Communication
                 FrameStructure = "帧头(2字节: 0xFE 0x01) + 设备地址(1字节) + 数据长度(2字节) + 数据域(N字节) + 校验和(1字节)",
                 Transport = "基于串口的私有协议，波特率默认9600，8N1格式",
                 Features = "支持广播帧，数据域采用小端序存储"
+            },
+            new ProtocolInfo
+            {
+                Name = "DBC协议",
+                FrameStructure = "CAN报文帧：11位标识符(标准帧) / 29位标识符(扩展帧) + 最多8字节数据域",
+                Transport = "基于CAN总线传输(常用500kbps/1Mbps)，DBC文件定义标识符、信号位域与字节序",
+                Features = "以CAN ID区分报文；信号按位域定义(起始位、长度、Intel/Motorola字节序、缩放因子与偏移量)"
             }
         };
 
